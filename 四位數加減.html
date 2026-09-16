@@ -1,0 +1,5832 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>進位退位小達人 - 數學教學互動網</title>
+  <style>
+/* === Combined CSS Stylesheet === */
+
+/* --- css/base.css --- */
+/* =========================================================
+   基礎變數、通用排版與頂部導航列樣式
+   ========================================================= */
+
+:root {
+  --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --bg-app: #f1f5f9;
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+
+  /* 依附圖色彩：千(紫)、百(藍)、十(綠)、個(紅) */
+  --color-thousand: #8b5cf6;
+  --color-thousand-dark: #6d28d9;
+  --color-thousand-bg: #f5f3ff;
+
+  --color-hundred: #2563eb;
+  --color-hundred-dark: #1d4ed8;
+  --color-hundred-bg: #eff6ff;
+
+  --color-ten: #16a34a;
+  --color-ten-dark: #15803d;
+  --color-ten-bg: #f0fdf4;
+
+  --color-one: #dc2626;
+  --color-one-dark: #b91c1c;
+  --color-one-bg: #fef2f2;
+
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: #e0e7ff;
+  --shadow-sm: 0 2px 5px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 24px 48px;
+  user-select: none;
+}
+
+/* 顯著拉寬整體容器以容納寬敞的個十百千欄位 */
+.app-container {
+  width: 100%;
+  max-width: 1480px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* 頂部導航列 */
+.top-nav {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 14px 28px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 2rem;
+  background: var(--primary-light);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.logo-text h1 {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e1b4b;
+}
+
+.logo-text p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.control-pill-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.segmented-control {
+  display: inline-flex;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.seg-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seg-btn:hover {
+  color: var(--text-main);
+}
+
+.seg-btn.active {
+  background: var(--card-bg);
+  color: var(--primary);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.seg-btn:disabled,
+.seg-btn.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.action-btn-group {
+  display: flex;
+  gap: 8px;
+}
+
+/* 進階題勾選選項樣式 */
+.advanced-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fdf4ff;
+  border: 1.5px solid #e879f9;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.advanced-toggle-label:hover {
+  background: #fae8ff;
+  border-color: #d946ef;
+  transform: translateY(-1px);
+}
+
+.advanced-toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.advanced-toggle-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #c026d3;
+  border-radius: 5px;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.advanced-toggle-label input[type="checkbox"]:checked + .advanced-toggle-box {
+  background: #c026d3;
+}
+
+.advanced-toggle-label input[type="checkbox"]:checked + .advanced-toggle-box::after {
+  content: "✔";
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.advanced-toggle-text {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #a21caf;
+}
+
+.btn-icon-text {
+  border: 1.5px solid #e2e8f0;
+  background: var(--card-bg);
+  color: var(--text-main);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.btn-icon-text:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+
+
+/* 通用動畫 */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulsePop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  70%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+/* --- css/scoreboard.css --- */
+/* =========================================================
+   玩家競賽與記分板專區樣式
+   ========================================================= */
+.players-scoreboard-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 14px 22px;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  border: 1.5px solid #e2e8f0;
+}
+
+.scoreboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.scoreboard-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.scoreboard-title-icon {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.scoreboard-title-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.scoreboard-main-title {
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.scoreboard-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.scoreboard-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.player-count-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count-label {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+/* 玩家人數 +1 -1 步進器樣式 */
+.player-count-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 3px 6px;
+  gap: 6px;
+}
+
+.stepper-btn {
+  width: 28px;
+  height: 28px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #334155;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.stepper-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: scale(1.08);
+}
+
+.stepper-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.stepper-val {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1e293b;
+  min-width: 44px;
+  text-align: center;
+}
+
+.btn-icon-text.mini {
+  padding: 5px 12px;
+  font-size: 0.82rem;
+  border-radius: 8px;
+}
+
+.btn-change-avatar-top {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-change-avatar-top:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* 玩家卡片網格 (動態對稱排列) */
+.players-grid {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  transition: all 0.25s ease;
+}
+
+/* 玩家卡片現代化設計 (告別框中框，極簡高質感) */
+.player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  user-select: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.player-card:hover {
+  transform: translateY(-2px);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* 作答中選中狀態：專屬主題色精緻微暈 */
+.player-card.active-turn {
+  background: #ffffff;
+  transform: translateY(-2px);
+}
+
+.player-info-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.player-avatar {
+  font-size: 1.55rem;
+  line-height: 1;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f8fafc;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.player-avatar:hover {
+  transform: scale(1.18);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.player-name-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.player-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.player-active-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  white-space: nowrap;
+  animation: pulseBadge 1.8s infinite;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* 右側得分膠囊徽章 (無冗餘灰框，大字俐落) */
+.player-score-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  background: #f8fafc;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.player-card.active-turn .player-score-pill {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.score-num {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.player-card.active-turn .score-num {
+  color: #1d4ed8;
+}
+
+.score-unit {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+/* 分數增加時的彈跳特效 */
+.score-pop {
+  animation: scoreBounce 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  color: #2563eb;
+}
+
+@keyframes scoreBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+
+.score-award-notice {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 10px;
+  color: #065f46;
+  font-size: 0.95rem;
+}
+
+.score-award-notice.already {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+
+
+/* 頭貼選擇彈窗樣式 */
+.avatar-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.avatar-modal-backdrop.open {
+  display: flex;
+}
+
+.avatar-modal {
+  background: #ffffff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 480px;
+  padding: 22px 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: modalPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.avatar-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.avatar-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-modal-title {
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.avatar-modal-close {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.avatar-modal-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.avatar-theme-tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 6px;
+}
+
+.avatar-tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-tab-btn.active {
+  background: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px 2px;
+}
+
+.avatar-option-btn {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 10px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.avatar-option-btn:hover {
+  transform: scale(1.18);
+  background: #eff6ff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+
+/* --- css/board.css --- */
+/* =========================================================
+   直式外層容器：容納直式位值板與旁邊的互動台開關
+   ========================================================= */
+.board-section-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.math-board-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 18px 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: fit-content;
+  max-width: 580px;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* 直式旁邊的開關卡片 */
+.stage-toggle-card {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid #e2e8f0;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.25s ease;
+  align-self: flex-start;
+}
+
+.stage-toggle-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+
+.stage-toggle-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-toggle-icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.stage-toggle-title {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.stage-toggle-desc {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* 切換開關本體 */
+.stage-switch-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  background: #f8fafc;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1.5px solid #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.stage-switch-control:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.stage-switch-control input[type="checkbox"] {
+  display: none;
+}
+
+.stage-switch-slider {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  background-color: #cbd5e1;
+  border-radius: 999px;
+  transition: background-color 0.25s ease;
+  flex-shrink: 0;
+}
+
+.stage-switch-slider::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.22);
+}
+
+.stage-switch-control input:checked + .stage-switch-slider {
+  background-color: #2563eb;
+}
+
+.stage-switch-control input:checked + .stage-switch-slider::before {
+  transform: translateX(22px);
+}
+
+.stage-switch-text {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #475569;
+}
+
+.stage-switch-control input:checked ~ .stage-switch-text {
+  color: #2563eb;
+}
+
+/* 橫式算式列 */
+.horizontal-equation-bar {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.h-eq-num1 { color: #4338ca; }
+.h-eq-op   { color: #dc2626; font-size: 1.65rem; }
+.h-eq-num2 { color: #0284c7; }
+.h-eq-eq   { color: #64748b; }
+.h-eq-res {
+  min-width: 54px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
+}
+
+.h-eq-res.hidden-res {
+  color: #64748b;
+  background: #f8fafc;
+  padding: 2px 14px;
+  border-radius: 10px;
+  border: 2px dashed #93c5fd;
+  font-size: 1.45rem;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.h-eq-res.hidden-res:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.h-eq-res.revealed-res {
+  color: #059669;
+  background: #ecfdf5;
+  padding: 2px 16px;
+  border-radius: 10px;
+  border: 2px solid #a7f3d0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  animation: pulsePop 0.25s ease;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+}
+
+.h-eq-res.revealed-res:hover {
+  transform: scale(1.05);
+  border-color: #34d399;
+}
+
+/* 直式位值網格結構 (簡潔精確，不用跟互動版一樣寬) */
+.board-grid-table {
+  display: grid;
+  grid-template-columns: 80px repeat(4, 76px);
+  row-gap: 10px;
+  column-gap: 14px;
+  align-items: center;
+  justify-items: center;
+  padding: 6px 8px;
+}
+
+.board-grid-table.digits-3 {
+  grid-template-columns: 80px repeat(3, 76px);
+}
+
+/* 1. 第一列：位值標籤 */
+.grid-pill-label {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 1.1rem;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.col-header-pill {
+  width: 74px;
+  height: 44px;
+  background: #f8fafc;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.col-header-pill.thousand { color: var(--color-thousand); background: var(--color-thousand-bg); }
+.col-header-pill.hundred  { color: var(--color-hundred);  background: var(--color-hundred-bg); }
+.col-header-pill.ten      { color: var(--color-ten);      background: var(--color-ten-bg); }
+.col-header-pill.one      { color: var(--color-one);      background: var(--color-one-bg); }
+
+/* 2. 第二列：退位紅框標記 */
+.grid-text-label.red {
+  color: #dc2626;
+  font-size: 1.2rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.borrow-box-slot {
+  width: 74px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.red-borrow-pill {
+  border: 2px solid #ef4444;
+  background: #ffffff;
+  color: #dc2626;
+  font-size: 1.25rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 8px;
+  line-height: 1.2;
+  box-shadow: 0 2px 5px rgba(239, 68, 68, 0.15);
+  animation: pulsePop 0.25s ease;
+  cursor: pointer;
+}
+
+.red-borrow-pill:hover {
+  background: #fee2e2;
+}
+
+.grid-text-label.blue {
+  color: #2563eb;
+  font-size: 1.2rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.blue-carry-pill {
+  border: 2px solid #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 1.25rem;
+  font-weight: 900;
+  padding: 2px 10px;
+  border-radius: 8px;
+  line-height: 1.2;
+  box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2);
+  animation: pulsePop 0.25s ease;
+  cursor: pointer;
+}
+
+.blue-carry-pill:hover {
+  background: #dbeafe;
+  transform: scale(1.08);
+}
+
+/* 3. 第三列：清除按鈕與被減數 */
+.btn-clear-borrow {
+  border: 1.5px solid #94a3b8;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-clear-borrow:hover {
+  background: #e2e8f0;
+  border-color: #64748b;
+  transform: translateY(-1px);
+}
+
+.digit-target-num1 {
+  width: 74px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  cursor: pointer;
+  position: relative;
+  border-radius: 10px;
+  transition: all 0.15s;
+}
+
+.digit-target-num1:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: scale(1.08);
+}
+
+.digit-target-num1.thousand { color: var(--color-thousand); }
+.digit-target-num1.hundred  { color: var(--color-hundred); }
+.digit-target-num1.ten      { color: var(--color-ten); }
+.digit-target-num1.one      { color: var(--color-one); }
+
+/* 連續退位時，若上方退位紅框已滿，寫在被退位數字旁邊的小數字 */
+.num1-sub-rem {
+  position: absolute;
+  top: -8px;
+  right: 2px;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: #dc2626;
+  line-height: 1;
+  background: #ffffff;
+  border: 1.5px solid #ef4444;
+  border-radius: 6px;
+  padding: 1px 5px;
+  box-shadow: 0 1px 4px rgba(239, 68, 68, 0.25);
+  pointer-events: none;
+  animation: pulsePop 0.2s ease;
+  z-index: 10;
+}
+
+/* 劃掉斜線通用樣式 (首個數字是 0 或被借位退位劃線) */
+.digit-target-num1.slashed,
+.digit-target-num2.slashed,
+.result-cell.slashed,
+.red-borrow-pill.slashed {
+  color: #94a3b8 !important;
+  position: relative;
+}
+
+.digit-target-num1.slashed::before,
+.digit-target-num2.slashed::before,
+.result-cell.slashed::before,
+.red-borrow-pill.slashed::before {
+  content: "";
+  position: absolute;
+  width: 38px;
+  height: 4.5px;
+  background: #ef4444;
+  border-radius: 2px;
+  transform: rotate(-45deg);
+  pointer-events: none;
+}
+
+/* 4. 第四列：運算符號與第二個數 (減數) */
+.grid-op-sign {
+  color: #dc2626;
+  font-size: 2.2rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.digit-target-num2 {
+  width: 74px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 900;
+  cursor: pointer;
+  border-radius: 10px;
+  position: relative;
+  transition: all 0.15s;
+}
+
+.digit-target-num2:hover {
+  background: rgba(0, 0, 0, 0.04);
+  transform: scale(1.05);
+}
+
+.digit-target-num2.thousand { color: #6d28d9; }
+.digit-target-num2.hundred  { color: #1d4ed8; }
+.digit-target-num2.ten      { color: #15803d; }
+.digit-target-num2.one      { color: #b91c1c; }
+
+/* 5. 第五列：黑色實體橫分隔線 */
+.board-divider-line {
+  grid-column: 1 / -1;
+  width: 100%;
+  height: 4.5px;
+  background: #0f172a;
+  border-radius: 3px;
+  margin: 2px 0;
+}
+
+/* 6. 第六列：計算結果列與未揭曉方框 */
+.result-cell {
+  width: 74px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  font-weight: 900;
+  border-radius: 10px;
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* 直式答案方框樣式 (點擊後選擇數字) */
+.answer-digit-box {
+  width: 58px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.answer-digit-box.empty {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.answer-digit-box.empty:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.18);
+}
+
+.answer-digit-box.filled {
+  background: #ffffff;
+  border: 2px solid #3b82f6;
+  font-size: 2.3rem;
+  font-weight: 900;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.answer-digit-box.filled:hover {
+  border-color: #1d4ed8;
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+}
+
+.answer-digit-box.correct {
+  border-color: #10b981 !important;
+  background: #ecfdf5 !important;
+  color: #047857 !important;
+}
+
+/* 當答案為三位數時，千位數填入 0 自動劃掉標記 (首位0劃掉) */
+.answer-digit-box.slashed {
+  position: relative;
+}
+
+.answer-digit-box.slashed::before {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 4.5px;
+  background: #ef4444;
+  border-radius: 2px;
+  transform: rotate(-45deg);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.result-cell.thousand .answer-digit-box.filled { color: #6d28d9; }
+.result-cell.hundred  .answer-digit-box.filled { color: #1d4ed8; }
+.result-cell.ten      .answer-digit-box.filled { color: #15803d; }
+.result-cell.one      .answer-digit-box.filled { color: #b91c1c; }
+
+/* 浮動數字選擇面板 */
+.answer-number-picker {
+  position: absolute;
+  background: #ffffff;
+  border: 2px solid #3b82f6;
+  border-radius: 18px;
+  padding: 12px 14px;
+  box-shadow: 0 14px 35px rgba(30, 41, 59, 0.25);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 230px;
+  animation: modalPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 6px;
+}
+
+.picker-title {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.picker-close-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  font-size: 0.85rem;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.picker-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.picker-digits-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.picker-digit-btn {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #1e293b;
+  padding: 6px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.picker-digit-btn:hover {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #2563eb;
+  transform: scale(1.12);
+  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.25);
+}
+
+.picker-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.picker-clear-btn {
+  width: 100%;
+  background: #fef2f2;
+  border: 1.5px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.picker-clear-btn:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+}
+
+
+
+/* =========================================================
+   直式右側整合控制台樣式
+   ========================================================= */
+
+/* 直式旁邊卡片內的檢查答案按鈕與換題/重設按鈕 */
+.side-check-action-wrap {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1.5px dashed #cbd5e1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-check-answer-side {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: 14px;
+  font-size: 1.15rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-check-answer-side:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.btn-check-answer-side:active {
+  transform: translateY(0);
+}
+
+.side-problem-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.side-action-btn {
+  justify-content: center;
+  padding: 9px 8px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.side-action-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+  transform: translateY(-1px);
+}
+
+
+/* --- css/stage.css --- */
+/* =========================================================
+   超寬幅錢幣互動舞台 (拉寬千、百、十、個四大欄位)
+   ========================================================= */
+.money-stage-card {
+  box-sizing: border-box;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: clamp(12px, 2vw, 24px);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(10px, 1.6vh, 18px);
+  width: 100%;
+  max-width: min(100%, 1400px);
+  min-height: min-content;
+  margin: 0 auto;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 針對不同解析度與裝置寬度自動自適應排版（避免橫向拉桿與過度擁擠） */
+@media (max-width: 1120px) {
+  .money-columns-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  .money-columns-container.digits-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .deduction-places-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  .deduction-places-grid.digits-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .money-columns-container.digits-3,
+  .deduction-places-grid.digits-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .money-stage-card {
+    padding: 12px 10px;
+    border-radius: var(--radius-md);
+  }
+  .money-columns-container,
+  .money-columns-container.digits-3 {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+  .deduction-places-grid,
+  .deduction-places-grid.digits-3 {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* 針對不同裝置高度進行高度自適應調節（避免畫面被切斷或捲軸過長） */
+@media (max-height: 820px) {
+  .money-stage-card {
+    gap: 10px;
+    padding: 12px 14px;
+  }
+  .money-column {
+    min-height: 280px !important;
+  }
+  .col-money-vault {
+    max-height: clamp(200px, 36vh, 360px) !important;
+    padding: 10px 8px !important;
+    gap: 8px !important;
+  }
+}
+
+@media (min-height: 960px) {
+  .money-column {
+    min-height: clamp(380px, 45vh, 480px);
+  }
+  .col-money-vault {
+    max-height: clamp(420px, 50vh, 600px);
+  }
+}
+
+/* 當開關關閉時隱藏互動台 */
+.money-stage-card.stage-hidden {
+  display: none !important;
+}
+
+.stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.stage-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stage-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.stage-actions-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 檢查答案按鈕 */
+.btn-check-answer {
+  background: #10b981;
+  color: #ffffff;
+  border: 1.5px solid #059669;
+  padding: 8px 18px;
+  border-radius: 10px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+}
+
+.btn-check-answer:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   純數字極簡錢幣樣式 (配合加寬欄位放大設計)
+   ========================================================= */
+
+/* 1000 元鈔票：兩兩成對雙排容易數設計 */
+.cash-bill-1000 {
+  width: 90px;
+  height: 46px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 55%, #60a5fa 100%);
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.25), inset 0 0 0 1.5px rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  position: relative;
+}
+
+.cash-bill-1000:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 6px 14px rgba(29, 78, 216, 0.38);
+}
+
+.pure-val-1000 {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow: 0 1.5px 3px rgba(0,0,0,0.3);
+}
+
+/* 100 元鈔票：兩兩成對雙排容易數設計 */
+.cash-bill-100 {
+  width: 90px;
+  height: 46px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #b91c1c 0%, #ef4444 55%, #f87171 100%);
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(185, 28, 28, 0.25), inset 0 0 0 1.5px rgba(255,255,255,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+  position: relative;
+}
+
+.cash-bill-100:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 6px 14px rgba(185, 28, 28, 0.38);
+}
+
+.pure-val-100 {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-shadow: 0 1.5px 3px rgba(0,0,0,0.3);
+}
+
+/* 10 元硬幣：五個一排十格陣容易數設計 */
+.cash-coin-10 {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffbeb 0%, #fde68a 35%, #d97706 70%, #92400e 100%);
+  border: 2.5px solid #fef3c7;
+  box-shadow: 0 2.5px 5px rgba(180, 83, 9, 0.35), inset 0 1.5px 2px rgba(255,255,255,0.8), inset 0 -1.5px 2px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.cash-coin-10::after {
+  content: "";
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px dashed rgba(146, 64, 14, 0.4);
+}
+
+.cash-coin-10:hover {
+  transform: scale(1.12) translateY(-2px);
+  box-shadow: 0 5px 12px rgba(180, 83, 9, 0.45);
+}
+
+.pure-val-10 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #78350f;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+  z-index: 1;
+}
+
+/* 1 元硬幣：五個一排十格陣容易數設計 */
+.cash-coin-1 {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fed7aa 0%, #fb923c 45%, #c2410c 80%, #7c2d12 100%);
+  border: 2px solid #ffedd5;
+  box-shadow: 0 2px 4px rgba(124, 45, 18, 0.35), inset 0 1px 2px rgba(255,255,255,0.7), inset 0 -1.5px 2px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+.cash-coin-1:hover {
+  transform: scale(1.12) translateY(-2px);
+  box-shadow: 0 5px 12px rgba(124, 45, 18, 0.45);
+}
+
+.pure-val-1 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #431407;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+}
+
+/* 扣錢模式啟用時的錢幣視覺效果 */
+.deduct-mode-active .cash-bill-1000:hover,
+.deduct-mode-active .cash-bill-100:hover,
+.deduct-mode-active .cash-coin-10:hover,
+.deduct-mode-active .cash-coin-1:hover {
+  filter: brightness(0.92) drop-shadow(0 0 10px #ef4444);
+  cursor: pointer !important;
+  transform: scale(1.08) !important;
+}
+
+.deduct-mode-active .cash-bill-1000:hover::after,
+.deduct-mode-active .cash-bill-100:hover::after,
+.deduct-mode-active .cash-coin-10:hover::before,
+.deduct-mode-active .cash-coin-1:hover::before {
+  content: "✂️ 扣掉";
+  position: absolute;
+  top: -26px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* =========================================================
+   更容易數的排列佈局：鈔票雙排成對、硬幣五個一排 (十格陣)
+   ========================================================= */
+
+/* 原有錢幣群組 */
+.original-group {
+  width: 100%;
+  padding: 4px 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* 鈔票雙排成對網格 (2張一排，寬度鎖定) */
+.bills-pair-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 90px);
+  gap: 6px;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* 硬幣五個一排網格 (5個一排，滿5個換下一排，寬度鎖定，符合十格陣計數) */
+.coins-five-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 34px);
+  gap: 4px;
+  justify-content: center;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* =========================================================
+   十個一組虛線框規範：
+   當換的錢大於10個以上，用虛線表示十個一組；若少於10個則不用
+   ========================================================= */
+
+/* 大於等於 10 個時：使用虛線框表示十個一組 */
+.ten-group-box {
+  width: 100%;
+  max-width: 200px;
+  border: 2px dashed #f59e0b;
+  background: rgba(254, 243, 199, 0.45);
+  border-radius: 12px;
+  padding: 8px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.1);
+  animation: fadeIn 0.25s ease;
+  transition: all 0.2s ease;
+}
+
+.ten-group-tag {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #b45309;
+  background: #fde68a;
+  padding: 2px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.5px;
+  border: 1px solid #fcd34d;
+}
+
+/* 少於 10 個時：不用虛線框，純粹排列 */
+.borrowed-sub-group {
+  width: 100%;
+  max-width: 200px;
+  border: none;
+  background: transparent;
+  padding: 4px 0;
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  animation: fadeIn 0.25s ease;
+}
+
+/* 位移动畫 */
+.flying-ghost-currency {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.25, 1), opacity 0.45s ease;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+}
+
+@keyframes puffGlow {
+  0%   { transform: scale(1); opacity: 1; filter: brightness(1.5); }
+  50%  { transform: scale(1.3); opacity: 0.8; filter: brightness(2); }
+  100% { transform: scale(0.2); opacity: 0; }
+}
+
+.puff-burst {
+  animation: puffGlow 0.3s forwards ease-out;
+}
+
+
+
+/* =========================================================
+   互動台底部檢查答案按鈕樣式
+   ========================================================= */
+
+.stage-bottom-check-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0 4px;
+  border-top: 1.5px dashed #cbd5e1;
+  margin-top: 8px;
+}
+
+.btn-check-answer-bottom {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  padding: 14px 42px;
+  border-radius: 16px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-check-answer-bottom:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.45);
+}
+
+
+
+/* 響應式佈局 */
+
+@media (max-width: 960px) {
+  .money-columns-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 加法進位而來的群組 */
+.carried-group {
+  width: 100%;
+  max-width: 200px;
+  border: 2px dashed #3b82f6;
+  background: rgba(239, 246, 255, 0.55);
+  border-radius: 12px;
+  padding: 8px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.1);
+  animation: fadeIn 0.25s ease;
+  transition: all 0.2s ease;
+}
+
+.carried-group-tag {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #1d4ed8;
+  background: #dbeafe;
+  padding: 2px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.5px;
+  border: 1px solid #bfdbfe;
+}
+
+
+/* --- css/deduction.css --- */
+/* =========================================================
+   扣錢專區樣式 (Deduction Zone)
+   ========================================================= */
+.deduction-zone-wrapper {
+  margin-top: 18px;
+  background: #fff5f5;
+  border: 2px dashed #f87171;
+  border-radius: var(--radius-md);
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.deduction-zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.deduction-zone-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #991b1b;
+}
+
+.deduction-icon {
+  font-size: 1.35rem;
+}
+
+.deduction-heading {
+  font-weight: 900;
+  font-size: 1.18rem;
+  color: #991b1b;
+}
+
+.deduction-subtext {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #b91c1c;
+  opacity: 0.85;
+}
+
+.deduction-zone-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* 扣錢勾選選項樣式 */
+.deduct-mode-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1.5px solid #f87171;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.deduct-mode-toggle-label:hover {
+  background: #fee2e2;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+}
+
+.deduct-mode-toggle-label input[type="checkbox"] {
+  display: none;
+}
+
+.deduct-mode-toggle-box {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #dc2626;
+  border-radius: 5px;
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.deduct-mode-toggle-label input[type="checkbox"]:checked + .deduct-mode-toggle-box {
+  background: #dc2626;
+}
+
+.deduct-mode-toggle-label input[type="checkbox"]:checked + .deduct-mode-toggle-box::after {
+  content: "✔";
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.deduct-mode-toggle-text {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #991b1b;
+}
+
+/* 應扣除金額藥丸標籤 */
+.target-deduct-pill {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  color: #991b1b;
+  font-weight: 800;
+  font-size: 0.94rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(185, 28, 28, 0.06);
+}
+
+.target-deduct-pill strong {
+  font-size: 1.25rem;
+  color: #dc2626;
+  margin: 0 2px;
+}
+
+/* 目前已扣除金額藥丸標籤 */
+.deducted-total-pill {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+  font-weight: 800;
+  font-size: 0.94rem;
+  padding: 6px 14px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.deducted-total-pill strong {
+  font-size: 1.25rem;
+  color: #0f172a;
+  margin: 0 2px;
+  transition: color 0.2s;
+}
+
+/* 當已扣金額符合應扣金額時的亮綠獎勵效果 */
+.deducted-total-pill.matched {
+  background: #ecfdf5;
+  border-color: #34d399;
+  color: #065f46;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+}
+
+.deducted-total-pill.matched strong {
+  color: #059669;
+}
+
+.btn-restore-all-deducted {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #475569;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-restore-all-deducted:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #1e293b;
+  transform: translateY(-1px);
+}
+
+.deduction-drop-zone {
+  background: #ffffff;
+  border: 2px dashed #fca5a5;
+  border-radius: 12px;
+  min-height: 110px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.deduction-drop-zone.drag-over {
+  background: #fee2e2;
+  border-color: #ef4444;
+  border-style: solid;
+  transform: scale(1.004);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+}
+
+/* 扣錢區四大位值欄位網格 (自動排列千百十個) */
+.deduction-places-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+}
+
+.deduction-places-grid.digits-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.deduction-place-col {
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 90px;
+  transition: all 0.2s ease;
+}
+
+.deduction-place-col.drag-over {
+  border-color: #ef4444;
+  background: #fee2e2;
+}
+
+.deduct-place-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+
+.deduct-place-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #334155;
+}
+
+.deduct-place-header.thousand .deduct-place-title { color: #6d28d9; }
+.deduct-place-header.hundred  .deduct-place-title { color: #1d4ed8; }
+.deduct-place-header.ten      .deduct-place-title { color: #15803d; }
+.deduct-place-header.one      .deduct-place-title { color: #b91c1c; }
+
+/* 數量標記：例如「6 個 1」 */
+.deduct-place-badge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  background: #e2e8f0;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.deduct-place-badge.has-items {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fca5a5;
+  font-weight: 900;
+}
+
+/* 扣除金庫：錢幣如附圖水平橫排 (如 6 個 1) */
+.deduct-place-vault {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 50px;
+  padding: 4px 2px;
+}
+
+/* 扣除的錢幣外觀（包含放回標籤與懸停提示） */
+.deducted-item-wrapper {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.deducted-item-wrapper:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+.deducted-item-wrapper::after {
+  content: "↺ 放回";
+  position: absolute;
+  bottom: -6px;
+  right: -4px;
+  background: #1e293b;
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+  z-index: 10;
+}
+
+.deducted-item-wrapper:hover::after {
+  opacity: 1;
+}
+
+/* 舞台錢幣支援拖拉提示與抓取游標 */
+.money-column .cash-bill-1000,
+.money-column .cash-bill-100,
+.money-column .cash-coin-10,
+.money-column .cash-coin-1 {
+  cursor: grab;
+}
+
+.money-column .cash-bill-1000:active,
+.money-column .cash-bill-100:active,
+.money-column .cash-coin-10:active,
+.money-column .cash-coin-1:active {
+  cursor: grabbing;
+}
+
+.dragging-currency {
+  opacity: 0.4 !important;
+  transform: scale(0.92) !important;
+}
+
+.stage-total-pill {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  padding: 7px 18px;
+  border-radius: 10px;
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: #1e40af;
+}
+
+/* 四大欄位（千、百、十、個，整齊適中） */
+.money-columns-container {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.money-columns-container.digits-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.money-column {
+  background: #f8fafc;
+  border-radius: var(--radius-md);
+  border: 1.5px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  min-height: 380px;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.money-column:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-sm);
+}
+
+.col-header {
+  padding: 14px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.col-header.thousand { background: var(--color-thousand-bg); color: var(--color-thousand-dark); }
+.col-header.hundred  { background: var(--color-hundred-bg);  color: var(--color-hundred-dark); }
+.col-header.ten      { background: var(--color-ten-bg);      color: var(--color-ten-dark); }
+.col-header.one      { background: var(--color-one-bg);      color: var(--color-one-dark); }
+
+.col-place-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.col-count-badge {
+  font-size: 0.88rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.col-money-vault {
+  flex: 1;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 520px;
+}
+
+/* 欄位底部操作區（包含新增的「補錢按鈕」） */
+.col-footer-action {
+  padding: 12px 10px;
+  border-top: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-decompose {
+  width: 100%;
+  border: 1.5px solid #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-weight: 800;
+  font-size: 0.86rem;
+  padding: 8px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn-decompose:hover:not(:disabled) {
+  background: #dbeafe;
+  transform: translateY(-1px);
+}
+
+.btn-decompose:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+.btn-restore {
+  width: 100%;
+  border: 1px dashed #10b981;
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 800;
+  font-size: 0.82rem;
+  padding: 6px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-restore:hover:not(:disabled) {
+  background: #d1fae5;
+}
+
+
+@keyframes deductVanish {
+  0%   { transform: scale(1) translateY(0); opacity: 1; }
+  100% { transform: scale(0.3) translateY(-30px); opacity: 0; }
+}
+
+.deduct-vanish {
+  animation: deductVanish 0.3s forwards ease-in;
+}
+
+/* 檢查答案彈窗 */
+.answer-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.answer-modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.answer-modal {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  width: 420px;
+  max-width: 90vw;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+  transform: scale(0.95);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.answer-modal-backdrop.open .answer-modal {
+  transform: scale(1);
+}
+
+.answer-icon {
+  font-size: 3.2rem;
+  line-height: 1;
+}
+
+.answer-title {
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.answer-title.correct { color: #059669; }
+.answer-title.wrong   { color: #dc2626; }
+
+.answer-desc {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.answer-close-btn {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 3px 8px rgba(79, 70, 229, 0.25);
+}
+
+.answer-close-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   加法模式：加錢專區樣式 (Addition Mode)
+   ========================================================= */
+.deduction-zone-wrapper.addition-mode {
+  background: #f0fdf4;
+  border-color: #4ade80;
+}
+
+.deduction-zone-wrapper.addition-mode .deduction-zone-title {
+  color: #15803d;
+}
+
+.deduction-zone-wrapper.addition-mode .deduction-heading {
+  color: #166534;
+}
+
+.deduction-zone-wrapper.addition-mode .deduction-subtext {
+  color: #15803d;
+}
+
+.deduction-zone-wrapper.addition-mode .deduct-mode-toggle-label {
+  background: #f0fdf4;
+  border-color: #86efac;
+}
+
+.deduction-zone-wrapper.addition-mode .deduct-mode-toggle-label:hover {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+.deduction-zone-wrapper.addition-mode .deduct-mode-toggle-box {
+  border-color: #16a34a;
+}
+
+.deduction-zone-wrapper.addition-mode .deduct-mode-toggle-label input[type="checkbox"]:checked + .deduct-mode-toggle-box {
+  background: #16a34a;
+}
+
+.deduction-zone-wrapper.addition-mode .deduct-mode-toggle-text {
+  color: #15803d;
+}
+
+.deduction-zone-wrapper.addition-mode .target-deduct-pill {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #15803d;
+}
+
+.deduction-zone-wrapper.addition-mode .target-deduct-pill strong {
+  color: #16a34a;
+}
+
+.deduction-zone-wrapper.addition-mode .deduction-drop-zone {
+  border-color: #86efac;
+}
+
+.deduction-zone-wrapper.addition-mode .deduction-drop-zone.drag-over {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+
+</style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- 頂部導航與設定列 -->
+    <header class="top-nav">
+      <div class="logo-group">
+        <div class="logo-icon">🪙</div>
+        <div class="logo-text">
+          <h1>進位與退位小高手</h1>
+          <p>位值概念與進退位教學</p>
+        </div>
+      </div>
+
+      <div class="control-pill-group">
+        <!-- 題型選擇 -->
+        <div class="segmented-control" id="opControl">
+          <button class="seg-btn active" data-op="sub">
+            <span>➖</span> 減法 (退位)
+          </button>
+          <button class="seg-btn" data-op="add">
+            <span>➕</span> 加法 (進位)
+          </button>
+        </div>
+
+        <!-- 位數選擇 -->
+        <div class="segmented-control" id="digitControl">
+          <button class="seg-btn active" data-digits="4">四位數</button>
+          <button class="seg-btn" data-digits="3">三位數</button>
+        </div>
+
+        <!-- 進階題勾選選項 (四位數與三位數混合題型) -->
+        <label class="advanced-toggle-label" id="lblAdvancedMode" title="勾選後題目可能出現四位數加減三位數的進階題型">
+          <input type="checkbox" id="chkAdvancedMode">
+          <span class="advanced-toggle-box"></span>
+          <span class="advanced-toggle-text">⚡ 進階題</span>
+        </label>
+      </div>
+    </header>
+
+    <!-- 玩家競賽與記分板專區 -->
+    <section class="players-scoreboard-card" id="playersScoreboardCard">
+      <div class="scoreboard-header">
+        <div class="scoreboard-title-group">
+          <span class="scoreboard-title-icon">🏆</span>
+          <div class="scoreboard-title-text">
+            <span class="scoreboard-main-title">玩家競賽記分板</span>
+            <span class="scoreboard-subtitle">選擇作答玩家，答對加 1 分</span>
+          </div>
+        </div>
+        <div class="scoreboard-controls">
+          <div class="player-count-wrap">
+            <span class="count-label">玩家人數：</span>
+            <div class="player-count-stepper" id="playerCountStepper">
+              <button class="stepper-btn minus" id="btnCountMinus" title="減少玩家人數">−</button>
+              <span class="stepper-val" id="playerCountVal">2 人</span>
+              <button class="stepper-btn plus" id="btnCountPlus" title="增加玩家人數">＋</button>
+            </div>
+          </div>
+          <button class="btn-icon-text mini btn-change-avatar-top" id="btnChangeAvatarTop" title="為目前作答玩家選擇頭貼">
+            <span>🎨</span> 選擇頭貼
+          </button>
+          <button class="btn-icon-text mini" id="btnResetScores" title="將所有玩家分數歸零">
+            <span>↺</span> 分數歸零
+          </button>
+        </div>
+      </div>
+      <div class="players-grid" id="playersGrid">
+        <!-- 由 JavaScript 動態生成各玩家卡片與記分板 -->
+      </div>
+    </section>
+
+    <!-- 核心位值板與直式旁邊的開關 -->
+    <div class="board-section-wrapper">
+      <main class="math-board-card">
+        
+        <!-- 橫式算式列 -->
+        <div class="horizontal-equation-bar" id="horizontalEquationBar">
+          <span class="h-eq-num1" id="hEqNum1">8430</span>
+          <span class="h-eq-op" id="hEqOp">−</span>
+          <span class="h-eq-num2" id="hEqNum2">1458</span>
+          <span class="h-eq-eq">＝</span>
+          <span class="h-eq-res" id="hEqRes" title="點擊翻開或隱藏答案">？</span>
+        </div>
+
+        <!-- 直式位值網格 (5列結構，附圖形式) -->
+        <div class="board-grid-table" id="boardGridTable">
+          
+          <!-- 第一列：位值標籤 -->
+          <div class="grid-pill-label">位值</div>
+          <div class="col-header-pill thousand col-thousand">千</div>
+          <div class="col-header-pill hundred">百</div>
+          <div class="col-header-pill ten">十</div>
+          <div class="col-header-pill one">個</div>
+
+          <!-- 第二列：退位/進位標記 -->
+          <div class="grid-text-label red" id="borrowRowLabel">退位</div>
+          <div class="borrow-box-slot col-thousand" id="borrowSlotThousand"></div>
+          <div class="borrow-box-slot" id="borrowSlotHundred"></div>
+          <div class="borrow-box-slot" id="borrowSlotTen"></div>
+          <div class="borrow-box-slot" id="borrowSlotOne"></div>
+
+          <!-- 第三列：清除按鈕與被減數 (點擊數字即可退位) -->
+          <button class="btn-clear-borrow" id="btnClearBorrow" title="清除所有退位與劃線">
+            <span style="font-size: 1.05rem;">🧹</span> 清除
+          </button>
+          <div class="digit-target-num1 thousand col-thousand" id="targetNum1Thousand" data-place="thousand" title="千位（點擊退位）">
+            8
+          </div>
+          <div class="digit-target-num1 hundred" id="targetNum1Hundred" data-place="hundred" title="百位（點擊退位）">
+            3
+          </div>
+          <div class="digit-target-num1 ten" id="targetNum1Ten" data-place="ten" title="十位（點擊退位）">
+            6
+          </div>
+          <div class="digit-target-num1 one" id="targetNum1One" data-place="one" title="個位">
+            5
+          </div>
+
+          <!-- 第四列：運算符號與減數 -->
+          <div class="grid-op-sign" id="gridOpSign">−</div>
+          <div class="digit-target-num2 thousand col-thousand" id="targetNum2Thousand" data-place="thousand" title="千位">
+            5
+          </div>
+          <div class="digit-target-num2 hundred" id="targetNum2Hundred" data-place="hundred" title="百位">
+            7
+          </div>
+          <div class="digit-target-num2 ten" id="targetNum2Ten" data-place="ten" title="十位">
+            2
+          </div>
+          <div class="digit-target-num2 one" id="targetNum2One" data-place="one" title="個位">
+            6
+          </div>
+
+          <!-- 第五列：橫線分隔線 -->
+          <div class="board-divider-line"></div>
+
+          <!-- 第六列：計算結果列 -->
+          <div></div>
+          <div class="result-cell thousand col-thousand" id="targetResThousand">2</div>
+          <div class="result-cell hundred" id="targetResHundred">6</div>
+          <div class="result-cell ten" id="targetResTen">3</div>
+          <div class="result-cell one" id="targetResOne">9</div>
+
+        </div>
+
+      </main>
+
+      <!-- 直式旁邊的開關：打開後才會出現互動台 -->
+      <aside class="stage-toggle-card" id="stageToggleCard">
+        <div class="stage-toggle-header">
+          <span class="stage-toggle-icon">🏦</span>
+          <span class="stage-toggle-title">錢幣互動台</span>
+        </div>
+        <p class="stage-toggle-desc">點擊開關可在下方展開錢幣進行換錢、退位與拖拉扣錢操作：</p>
+        <label class="stage-switch-control" id="lblStageSwitch" title="點擊開關：開啟或隱藏下方的錢幣互動台">
+          <input type="checkbox" id="chkStageSwitch">
+          <span class="stage-switch-slider"></span>
+          <span class="stage-switch-text" id="stageSwitchLabel">互動台：已關閉</span>
+        </label>
+
+        <!-- 檢查答案與換題、重設按鈕 (直式旁邊控制台) -->
+        <div class="side-check-action-wrap">
+          <button class="btn-check-answer-side" id="btnCheckAnswerSide" title="檢查直式答案與錢幣是否正確">
+            <span>✅</span> 檢查答案
+          </button>
+          <div class="side-problem-actions">
+            <button class="btn-icon-text side-action-btn" id="btnRandom" title="隨機產生題目">
+              <span>🎲</span> 換題
+            </button>
+            <button class="btn-icon-text side-action-btn" id="btnReset" title="重設回初始狀態">
+              <span>↺</span> 重設
+            </button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 核心互動舞台：超寬幅錢幣展示、換算、補錢、扣錢區與檢查答案專區 (預設關閉，由開關控制) -->
+    <section class="money-stage-card stage-hidden" id="moneyStageCard">
+      <div class="stage-header">
+        <div class="stage-title-wrap">
+          <span style="font-size: 1.5rem;">🏦</span>
+          <span class="stage-title">位值錢幣互動台</span>
+        </div>
+
+        <div class="stage-actions-bar">
+          <div class="stage-total-pill">
+            目前錢幣總值：<strong style="color: #2563eb; font-size: 1.35rem;" id="stageTotalVal">8430</strong> 元
+          </div>
+          <!-- 檢查答案按鈕 -->
+          <button class="btn-check-answer" id="btnCheckAnswer" title="檢查目前錢幣總值是否符合算式答案">
+            <span>✅</span> 檢查答案
+          </button>
+          <button class="btn-icon-text" id="btnResetVault" title="將錢幣恢復為算式原始數值">
+            <span>↺</span> 還原錢幣
+          </button>
+        </div>
+      </div>
+
+      <!-- 四個加寬欄位 (純數字極簡設計) -->
+      <div class="money-columns-container" id="moneyColumnsContainer">
+        
+        <!-- 千位欄位 (1000 元鈔票) -->
+        <div class="money-column col-thousand" id="vaultColThousand">
+          <div class="col-header thousand">
+            <span class="col-place-name">千位 ($1000)</span>
+            <span class="col-count-badge" id="countBadgeThousand">8 張 (8000元)</span>
+          </div>
+          <div class="col-money-vault" id="vaultThousand" title="點擊千元大鈔可平滑位移換成 10 張百元！">
+            <!-- 純數字 1000 鈔票動態生成 -->
+          </div>
+          <div class="col-footer-action">
+            <button class="btn-decompose" id="btnDecomposeThousand">
+              換 10 張 100 元 ➔
+            </button>
+            <button class="btn-restore" id="btnRestoreThousand" style="display: none;">
+              ⮌ 還原回 1000 元
+            </button>
+          </div>
+        </div>
+
+        <!-- 百位欄位 (100 元鈔票) -->
+        <div class="money-column" id="vaultColHundred">
+          <div class="col-header hundred">
+            <span class="col-place-name">百位 ($100)</span>
+            <span class="col-count-badge" id="countBadgeHundred">3 張 (300元)</span>
+          </div>
+          <div class="col-money-vault" id="vaultHundred" title="點擊百元鈔可平滑位移換成 10 個 10 元！">
+            <!-- 純數字 100 鈔票動態生成 -->
+          </div>
+          <div class="col-footer-action">
+            <button class="btn-decompose" id="btnDecomposeHundred">
+              換 10 個 10 元 ➔
+            </button>
+            <button class="btn-restore" id="btnRestoreHundred" style="display: none;">
+              ⮌ 還原回 100 元
+            </button>
+            <button class="btn-decompose btn-carry" id="btnCarryHundred" style="display: none;">
+              換 1 張 1000 元 ➔
+            </button>
+            <button class="btn-restore btn-restore-carry" id="btnRestoreCarryHundred" style="display: none;">
+              ⮌ 還原回 10 張 100 元
+            </button>
+          </div>
+        </div>
+
+        <!-- 十位欄位 (10 元硬幣) -->
+        <div class="money-column" id="vaultColTen">
+          <div class="col-header ten">
+            <span class="col-place-name">十位 ($10)</span>
+            <span class="col-count-badge" id="countBadgeTen">6 個 (60元)</span>
+          </div>
+          <div class="col-money-vault" id="vaultTen" title="點擊 10 元硬幣可平滑位移換成 10 個 1 元！">
+            <!-- 純數字 10 硬幣動態生成 -->
+          </div>
+          <div class="col-footer-action">
+            <button class="btn-decompose" id="btnDecomposeTen">
+              換 10 個 1 元 ➔
+            </button>
+            <button class="btn-restore" id="btnRestoreTen" style="display: none;">
+              ⮌ 還原回 10 元
+            </button>
+            <button class="btn-decompose btn-carry" id="btnCarryTen" style="display: none;">
+              換 1 張 100 元 ➔
+            </button>
+            <button class="btn-restore btn-restore-carry" id="btnRestoreCarryTen" style="display: none;">
+              ⮌ 還原回 10 個 10 元
+            </button>
+          </div>
+        </div>
+
+        <!-- 個位欄位 (1 元硬幣) -->
+        <div class="money-column" id="vaultColOne">
+          <div class="col-header one">
+            <span class="col-place-name">個位 ($1)</span>
+            <span class="col-count-badge" id="countBadgeOne">5 個 (5元)</span>
+          </div>
+          <div class="col-money-vault" id="vaultOne">
+            <!-- 純數字 1 硬幣動態生成 -->
+          </div>
+          <div class="col-footer-action">
+            <button class="btn-decompose btn-carry" id="btnCarryOne" style="display: none;">
+              換 1 個 10 元 ➔
+            </button>
+            <button class="btn-restore btn-restore-carry" id="btnRestoreCarryOne" style="display: none;">
+              ⮌ 還原回 10 個 1 元
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 扣錢專區：拖拉錢幣至此扣除，自動依千百十個位值排列並顯示數量，可點擊或拖回還原 -->
+      <div class="deduction-zone-wrapper" id="deductionZoneWrapper">
+        <div class="deduction-zone-header">
+          <div class="deduction-zone-title">
+            <span class="deduction-icon">✂️</span>
+            <span class="deduction-heading">扣錢區</span>
+            <span class="deduction-subtext">（拖拉上方錢幣至此扣除，系統會自動歸入對應位值；點擊已扣除錢幣可放回台上）</span>
+          </div>
+          <div class="deduction-zone-actions">
+            <!-- 點擊直接扣錢勾選選項 -->
+            <label class="deduct-mode-toggle-label" id="lblDeductMode" title="勾選後，直接點擊互動台的錢即可移動至扣錢區；未勾選則可用拖拉方式">
+              <input type="checkbox" id="chkDeductMode">
+              <span class="deduct-mode-toggle-box"></span>
+              <span class="deduct-mode-toggle-text">點擊直接扣錢</span>
+            </label>
+            <!-- 應扣除金額 -->
+            <div class="target-deduct-pill" id="targetDeductPill">
+              應扣除：<strong id="targetDeductVal">0</strong> 元
+            </div>
+            <div class="deducted-total-pill" id="deductedTotalPill">
+              已扣除：<strong id="deductedTotalVal">0</strong> 元
+            </div>
+            <button class="btn-restore-all-deducted" id="btnRestoreAllDeducted" title="將扣錢區的所有錢幣還原回台上">
+              <span>↺</span> 全部還原回台上
+            </button>
+          </div>
+        </div>
+
+        <div class="deduction-drop-zone" id="deductionDropZone" title="將上方錢幣拖拉到這裡扣錢">
+          <!-- 自動依千百十個位值排列的網格欄位 -->
+          <div class="deduction-places-grid" id="deductionPlacesGrid">
+            
+            <!-- 千位扣除欄位 -->
+            <div class="deduction-place-col col-thousand" id="deductColThousand" data-place="thousand">
+              <div class="deduct-place-header thousand">
+                <span class="deduct-place-title">千位 ($1000)</span>
+                <span class="deduct-place-badge" id="deductBadgeThousand">0 張 1000</span>
+              </div>
+              <div class="deduct-place-vault" id="deductVaultThousand">
+                <!-- 千元大鈔排列區 -->
+              </div>
+            </div>
+
+            <!-- 百位扣除欄位 -->
+            <div class="deduction-place-col" id="deductColHundred" data-place="hundred">
+              <div class="deduct-place-header hundred">
+                <span class="deduct-place-title">百位 ($100)</span>
+                <span class="deduct-place-badge" id="deductBadgeHundred">0 張 100</span>
+              </div>
+              <div class="deduct-place-vault" id="deductVaultHundred">
+                <!-- 百元鈔票排列區 -->
+              </div>
+            </div>
+
+            <!-- 十位扣除欄位 -->
+            <div class="deduction-place-col" id="deductColTen" data-place="ten">
+              <div class="deduct-place-header ten">
+                <span class="deduct-place-title">十位 ($10)</span>
+                <span class="deduct-place-badge" id="deductBadgeTen">0 個 10</span>
+              </div>
+              <div class="deduct-place-vault" id="deductVaultTen">
+                <!-- 10元硬幣排列區 -->
+              </div>
+            </div>
+
+            <!-- 個位扣除欄位 -->
+            <div class="deduction-place-col" id="deductColOne" data-place="one">
+              <div class="deduct-place-header one">
+                <span class="deduct-place-title">個位 ($1)</span>
+                <span class="deduct-place-badge" id="deductBadgeOne">0 個 1</span>
+              </div>
+              <div class="deduct-place-vault" id="deductVaultOne">
+                <!-- 1元硬幣排列區 (附圖樣式：如 6 個 1 一字排開) -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 直式答案數字選擇浮動面板 -->
+  <div class="answer-number-picker" id="answerNumberPicker" style="display: none;">
+    <div class="picker-header">
+      <span class="picker-title" id="pickerTitle">選擇數字</span>
+      <button class="picker-close-btn" id="pickerCloseBtn">✕</button>
+    </div>
+    <div class="picker-digits-grid">
+      <button class="picker-digit-btn" data-digit="0">0</button>
+      <button class="picker-digit-btn" data-digit="1">1</button>
+      <button class="picker-digit-btn" data-digit="2">2</button>
+      <button class="picker-digit-btn" data-digit="3">3</button>
+      <button class="picker-digit-btn" data-digit="4">4</button>
+      <button class="picker-digit-btn" data-digit="5">5</button>
+      <button class="picker-digit-btn" data-digit="6">6</button>
+      <button class="picker-digit-btn" data-digit="7">7</button>
+      <button class="picker-digit-btn" data-digit="8">8</button>
+      <button class="picker-digit-btn" data-digit="9">9</button>
+    </div>
+    <div class="picker-footer">
+      <button class="picker-clear-btn" id="pickerClearBtn">⌫ 清除 (？)</button>
+    </div>
+  </div>
+
+  <!-- 頭貼選擇彈窗 (動物與食物主題) -->
+  <div class="avatar-modal-backdrop" id="avatarModal">
+    <div class="avatar-modal">
+      <div class="avatar-modal-header">
+        <div class="avatar-modal-title-wrap">
+          <span style="font-size: 1.4rem;">🎨</span>
+          <span class="avatar-modal-title" id="avatarModalTitle">選擇頭貼</span>
+        </div>
+        <button class="avatar-modal-close" id="avatarModalCloseBtn">✕</button>
+      </div>
+      <div class="avatar-theme-tabs" id="avatarThemeTabs">
+        <button class="avatar-tab-btn active" data-theme="animal">🐾 動物主題</button>
+        <button class="avatar-tab-btn" data-theme="food">🍰 食物主題</button>
+      </div>
+      <div class="avatar-grid" id="avatarGrid">
+        <!-- 由 JavaScript 動態生成表情符號 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 檢查答案反饋彈窗 -->
+  <div class="answer-modal-backdrop" id="answerModal">
+    <div class="answer-modal">
+      <div class="answer-icon" id="answerIcon">🎉</div>
+      <div class="answer-title" id="answerTitle">答對了！</div>
+      <div class="answer-desc" id="answerDesc">台上的錢幣總值與算式答案完全相符！</div>
+      <button class="answer-close-btn" id="answerCloseBtn">我知道了</button>
+    </div>
+  </div>
+
+  <script>
+/* === Combined JavaScript === */
+
+/* --- js/state.js --- */
+/**
+ * 換錢與退位教學互動網站 - 全域狀態與常數資料
+ */
+
+// 全域狀態
+const state = {
+  operation: 'sub',     // 'sub' (減法/退位) | 'add' (加法/換錢)
+  digits: 4,            // 4 (千百十個) | 3 (百十個)
+  advancedMode: false,  // 進階題勾選開關 (四位數 ± 三位數)
+  stageVisible: false,  // 互動台開關狀態 (預設關閉，由開關打開後才會出現互動台)
+  deductMode: false,    // 點擊扣錢模式勾選開關 (勾選後點擊錢幣直接移動至扣錢區)
+  hEqRevealed: false,   // 橫式算式答案是否揭曉 (點擊或檢查答案正確後顯示)
+  deductedItems: [],    // 扣錢區的錢幣項目陣列 [{ id, place, isBorrowed, nominalVal }]
+  additionItems: [],    // 加錢區待加的錢幣項目陣列 [{ id, place, nominalVal }]
+  addedItems: [],       // 已從加錢區加入至舞台的錢幣項目陣列 [{ id, place, nominalVal }]
+
+  // 原始數字 (配合連續退位教學題目 8430 - 1458 = 6972)
+  num1: { thousand: 8, hundred: 4, ten: 3, one: 0 },
+  num2: { thousand: 1, hundred: 4, ten: 5, one: 8 },
+
+  // 舞台上的動態錢幣結構
+  vault: {
+    thousand: { original: 8, borrowed: 0, carried: 0 },
+    hundred:  { original: 4, borrowed: 0, carried: 0 },
+    ten:      { original: 3, borrowed: 0, carried: 0 },
+    one:      { original: 0, borrowed: 0, carried: 0 }
+  },
+
+  // 退位記錄 (減法)：每個位數只能退位一次
+  decomposed: {
+    thousand: false,
+    hundred: false,
+    ten: false
+  },
+
+  // 進位記錄 (加法)：每個位數只能進位一次 (0 或 1)
+  carries: {
+    thousand: 0,
+    hundred: 0,
+    ten: 0,
+    one: 0
+  },
+
+  // 舞台進位記錄 (加法)：互動台目前換算進位的狀態
+  stageCarried: {
+    thousand: 0,
+    hundred: 0,
+    ten: 0
+  },
+
+  // 直式答案各個位數使用者輸入答案 (null 表示未選擇顯示 ?)
+  userAnswers: {
+    thousand: null,
+    hundred: null,
+    ten: null,
+    one: null
+  },
+  answerBoxesVerified: false, // 是否檢查答案通過
+
+  // 玩家競賽與記分板狀態
+  playerCount: 2,         // 玩家人數 (1 ~ 8，預設 2 人)
+  activePlayerIndex: 0,   // 目前作答玩家索引 (0-based)
+  currentAvatarPlayerIndex: 0, // 當前更換頭貼的玩家
+  currentAvatarTheme: 'animal', // 'animal' | 'food'
+  problemAwarded: false,  // 當前題目是否已計過分 (防止重複點擊加分)
+  players: [
+    { id: 1, name: '玩家 1', avatar: '🦁', color: '#2563eb', score: 0 },
+    { id: 2, name: '玩家 2', avatar: '🐰', color: '#059669', score: 0 },
+    { id: 3, name: '玩家 3', avatar: '🦊', color: '#d97706', score: 0 },
+    { id: 4, name: '玩家 4', avatar: '🐼', color: '#db2777', score: 0 },
+    { id: 5, name: '玩家 5', avatar: '🐶', color: '#7c3aed', score: 0 },
+    { id: 6, name: '玩家 6', avatar: '🐱', color: '#0891b2', score: 0 },
+    { id: 7, name: '玩家 7', avatar: '🐯', color: '#ea580c', score: 0 },
+    { id: 8, name: '玩家 8', avatar: '🐨', color: '#e11d48', score: 0 }
+  ]
+};
+
+const AVATAR_THEMES = {
+  animal: ['🦁', '🐰', '🦊', '🐼', '🐶', '🐱', '🐻', '🐨', '🐯', '🐸', '🐵', '🐧', '🐷', '🐮', '🐥', '🦄', '🐬', '🦉', '🐢', '🦋'],
+  food: ['🍎', '🍓', '🍉', '🍇', '🍌', '🍒', '🍕', '🍔', '🍟', '🌭', '🌮', '🍣', '🍙', '🍜', '🍦', '🍰', '🍩', '🍪', '🥞', '🍿']
+};
+
+const DOM = {};
+
+const PLACE_VALUES = {
+  thousand: 1000,
+  hundred: 100,
+  ten: 10,
+  one: 1
+};
+
+const PLACE_NAMES = {
+  thousand: '千位',
+  hundred: '百位',
+  ten: '十位',
+  one: '個位'
+};
+
+
+function computeValue(numObj) {
+  return (numObj.thousand * 1000) + (numObj.hundred * 100) + (numObj.ten * 10) + numObj.one;
+}
+
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+function initAdditionItems() {
+  state.additionItems = [];
+  state.addedItems = [];
+  state.stageCarried = {
+    thousand: 0,
+    hundred: 0,
+    ten: 0
+  };
+  ['thousand', 'hundred', 'ten', 'one'].forEach(p => {
+    if (state.vault[p]) {
+      state.vault[p].carried = 0;
+    }
+  });
+  if (state.operation !== 'add') return;
+
+  const places = state.digits === 3 ? ['hundred', 'ten', 'one'] : ['thousand', 'hundred', 'ten', 'one'];
+  places.forEach(place => {
+    const count = state.num2[place] || 0;
+    for (let i = 0; i < count; i++) {
+      state.additionItems.push({
+        id: 'add_' + place + '_' + i + '_' + Math.random().toString(36).substr(2, 5),
+        place: place,
+        nominalVal: PLACE_VALUES[place]
+      });
+    }
+  });
+}
+
+/* =========================================================
+   DOM 快取管理
+   ========================================================= */
+function cacheDOM() {
+  DOM.opControl = document.getElementById('opControl');
+  DOM.digitControl = document.getElementById('digitControl');
+  DOM.btnRandom = document.getElementById('btnRandom');
+  DOM.btnReset = document.getElementById('btnReset');
+
+  // 進階題勾選開關
+  DOM.chkAdvancedMode = document.getElementById('chkAdvancedMode');
+  DOM.lblAdvancedMode = document.getElementById('lblAdvancedMode');
+
+  // 橫式算式
+  DOM.hEqNum1 = document.getElementById('hEqNum1');
+  DOM.hEqOp   = document.getElementById('hEqOp');
+  DOM.hEqNum2 = document.getElementById('hEqNum2');
+  DOM.hEqRes  = document.getElementById('hEqRes');
+
+  // 直式網格
+  DOM.boardGridTable = document.getElementById('boardGridTable');
+  DOM.btnClearBorrow = document.getElementById('btnClearBorrow');
+  DOM.gridOpSign = document.getElementById('gridOpSign');
+  DOM.borrowRowLabel = document.getElementById('borrowRowLabel');
+
+  // 退位/進位標記 Slot
+  DOM.borrowSlotThousand = document.getElementById('borrowSlotThousand');
+  DOM.borrowSlotHundred = document.getElementById('borrowSlotHundred');
+  DOM.borrowSlotTen = document.getElementById('borrowSlotTen');
+  DOM.borrowSlotOne = document.getElementById('borrowSlotOne');
+
+  // 第一行被減數
+  DOM.targetNum1Thousand = document.getElementById('targetNum1Thousand');
+  DOM.targetNum1Hundred = document.getElementById('targetNum1Hundred');
+  DOM.targetNum1Ten = document.getElementById('targetNum1Ten');
+  DOM.targetNum1One = document.getElementById('targetNum1One');
+
+  // 第二行減數
+  DOM.targetNum2Thousand = document.getElementById('targetNum2Thousand');
+  DOM.targetNum2Hundred = document.getElementById('targetNum2Hundred');
+  DOM.targetNum2Ten = document.getElementById('targetNum2Ten');
+  DOM.targetNum2One = document.getElementById('targetNum2One');
+
+  // 結果行
+  DOM.targetResThousand = document.getElementById('targetResThousand');
+  DOM.targetResHundred = document.getElementById('targetResHundred');
+  DOM.targetResTen = document.getElementById('targetResTen');
+  DOM.targetResOne = document.getElementById('targetResOne');
+
+  // 互動台開關與舞台卡片
+  DOM.moneyStageCard = document.getElementById('moneyStageCard');
+  DOM.stageToggleCard = document.getElementById('stageToggleCard');
+  DOM.chkStageSwitch = document.getElementById('chkStageSwitch');
+  DOM.stageSwitchLabel = document.getElementById('stageSwitchLabel');
+
+  // 舞台元件
+  DOM.stageTotalVal = document.getElementById('stageTotalVal');
+  DOM.btnCheckAnswer = document.getElementById('btnCheckAnswer');
+  DOM.btnResetVault = document.getElementById('btnResetVault');
+
+  // 扣錢專區元件 (自動依千百十個位值排列)
+  DOM.deductionZoneWrapper = document.getElementById('deductionZoneWrapper');
+  DOM.deductionIcon = document.querySelector('#deductionZoneWrapper .deduction-icon');
+  DOM.deductionHeading = document.querySelector('#deductionZoneWrapper .deduction-heading');
+  DOM.deductionSubtext = document.querySelector('#deductionZoneWrapper .deduction-subtext');
+  DOM.chkDeductMode = document.getElementById('chkDeductMode');
+  DOM.lblDeductMode = document.getElementById('lblDeductMode');
+  DOM.deductModeToggleText = document.querySelector('#lblDeductMode .deduct-mode-toggle-text');
+  DOM.targetDeductPill = document.getElementById('targetDeductPill');
+  DOM.targetDeductVal = document.getElementById('targetDeductVal');
+  DOM.deductedTotalPill = document.getElementById('deductedTotalPill');
+  DOM.deductedTotalVal = document.getElementById('deductedTotalVal');
+  DOM.btnRestoreAllDeducted = document.getElementById('btnRestoreAllDeducted');
+  DOM.deductionDropZone = document.getElementById('deductionDropZone');
+  DOM.deductionPlacesGrid = document.getElementById('deductionPlacesGrid');
+
+  // 扣錢區各個位值欄位、數量標記與金庫
+  DOM.deductColThousand = document.getElementById('deductColThousand');
+  DOM.deductBadgeThousand = document.getElementById('deductBadgeThousand');
+  DOM.deductVaultThousand = document.getElementById('deductVaultThousand');
+
+  DOM.deductColHundred = document.getElementById('deductColHundred');
+  DOM.deductBadgeHundred = document.getElementById('deductBadgeHundred');
+  DOM.deductVaultHundred = document.getElementById('deductVaultHundred');
+
+  DOM.deductColTen = document.getElementById('deductColTen');
+  DOM.deductBadgeTen = document.getElementById('deductBadgeTen');
+  DOM.deductVaultTen = document.getElementById('deductVaultTen');
+
+  DOM.deductColOne = document.getElementById('deductColOne');
+  DOM.deductBadgeOne = document.getElementById('deductBadgeOne');
+  DOM.deductVaultOne = document.getElementById('deductVaultOne');
+
+  DOM.moneyColumnsContainer = document.getElementById('moneyColumnsContainer');
+  DOM.vaultThousand = document.getElementById('vaultThousand');
+  DOM.vaultHundred = document.getElementById('vaultHundred');
+  DOM.vaultTen = document.getElementById('vaultTen');
+  DOM.vaultOne = document.getElementById('vaultOne');
+
+  DOM.countBadgeThousand = document.getElementById('countBadgeThousand');
+  DOM.countBadgeHundred = document.getElementById('countBadgeHundred');
+  DOM.countBadgeTen = document.getElementById('countBadgeTen');
+  DOM.countBadgeOne = document.getElementById('countBadgeOne');
+
+  DOM.btnDecomposeThousand = document.getElementById('btnDecomposeThousand');
+  DOM.btnDecomposeHundred = document.getElementById('btnDecomposeHundred');
+  DOM.btnDecomposeTen = document.getElementById('btnDecomposeTen');
+
+  DOM.btnRestoreThousand = document.getElementById('btnRestoreThousand');
+  DOM.btnRestoreHundred = document.getElementById('btnRestoreHundred');
+  DOM.btnRestoreTen = document.getElementById('btnRestoreTen');
+
+  DOM.btnCarryOne = document.getElementById('btnCarryOne');
+  DOM.btnRestoreCarryOne = document.getElementById('btnRestoreCarryOne');
+  DOM.btnCarryTen = document.getElementById('btnCarryTen');
+  DOM.btnRestoreCarryTen = document.getElementById('btnRestoreCarryTen');
+  DOM.btnCarryHundred = document.getElementById('btnCarryHundred');
+  DOM.btnRestoreCarryHundred = document.getElementById('btnRestoreCarryHundred');
+
+  // 檢查答案彈窗
+  DOM.answerModal = document.getElementById('answerModal');
+  DOM.answerIcon = document.getElementById('answerIcon');
+  DOM.answerTitle = document.getElementById('answerTitle');
+  DOM.answerDesc = document.getElementById('answerDesc');
+  DOM.answerCloseBtn = document.getElementById('answerCloseBtn');
+
+  // 玩家競賽與記分板
+  DOM.playersScoreboardCard = document.getElementById('playersScoreboardCard');
+  DOM.playerCountStepper = document.getElementById('playerCountStepper');
+  DOM.btnCountMinus = document.getElementById('btnCountMinus');
+  DOM.playerCountVal = document.getElementById('playerCountVal');
+  DOM.btnCountPlus = document.getElementById('btnCountPlus');
+  DOM.btnChangeAvatarTop = document.getElementById('btnChangeAvatarTop');
+  DOM.btnResetScores = document.getElementById('btnResetScores');
+  DOM.playersGrid = document.getElementById('playersGrid');
+
+  // 檢查答案按鈕 (直式旁邊與互動台)
+  DOM.btnCheckAnswerSide = document.getElementById('btnCheckAnswerSide');
+  DOM.btnCheckAnswerBottom = document.getElementById('btnCheckAnswerBottom');
+
+  // 直式答案數字選擇浮動面板
+  DOM.answerNumberPicker = document.getElementById('answerNumberPicker');
+  DOM.pickerTitle = document.getElementById('pickerTitle');
+  DOM.pickerCloseBtn = document.getElementById('pickerCloseBtn');
+  DOM.pickerClearBtn = document.getElementById('pickerClearBtn');
+
+  // 頭貼選擇彈窗
+  DOM.avatarModal = document.getElementById('avatarModal');
+  DOM.avatarModalTitle = document.getElementById('avatarModalTitle');
+  DOM.avatarModalCloseBtn = document.getElementById('avatarModalCloseBtn');
+  DOM.avatarThemeTabs = document.getElementById('avatarThemeTabs');
+  DOM.avatarGrid = document.getElementById('avatarGrid');
+}
+
+
+/* --- js/audio.js --- */
+/**
+ * 換錢與退位教學互動網站 - Web Audio 互動音效模組
+ * 純原生 Web Audio API 合成，零外部音檔依賴，即時響應且具備容錯保護。
+ */
+
+let audioCtx = null;
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (AudioContextClass) {
+      audioCtx = new AudioContextClass();
+    }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+  return audioCtx;
+}
+
+/**
+ * 金幣 / 換錢音效 (清脆的高音雙頻鈴聲)
+ */
+function playCoinSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(987.77, now); // B5
+    osc.frequency.setValueAtTime(1318.51, now + 0.08); // E6
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.36);
+  } catch (e) {}
+}
+
+/**
+ * 輕微點擊音效 (短促的氣泡微點擊)
+ */
+function playSubtleTapSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(440, now);
+    osc.frequency.exponentialRampToValueAtTime(220, now + 0.04);
+
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.06);
+  } catch (e) {}
+}
+
+/**
+ * 還原 / 重設音效 (溫和的下滑微音)
+ */
+function playRestoreSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(300, now + 0.18);
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.22);
+  } catch (e) {}
+}
+
+/**
+ * 扣錢移動音效 (明確的彈跳過渡音)
+ */
+function playDeductSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(523.25, now); // C5
+    osc.frequency.exponentialRampToValueAtTime(392.00, now + 0.12); // G4
+
+    gain.gain.setValueAtTime(0.18, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
+  } catch (e) {}
+}
+
+/**
+ * 答對成功慶祝音效 (明亮的三和弦樂音：Do-Mi-Sol-HighDo)
+ */
+function playSuccessSound() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    const now = ctx.currentTime;
+
+    const notes = [
+      { freq: 523.25, delay: 0 },    // C5
+      { freq: 659.25, delay: 0.1 },  // E5
+      { freq: 783.99, delay: 0.2 },  // G5
+      { freq: 1046.50, delay: 0.3 }  // C6
+    ];
+
+    notes.forEach(note => {
+      const startTime = now + note.delay;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(note.freq, startTime);
+
+      gain.gain.setValueAtTime(0.25, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + 0.25);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startTime);
+      osc.stop(startTime + 0.26);
+    });
+  } catch (e) {}
+}
+
+
+/* --- js/scoreboard.js --- */
+/**
+ * 換錢與退位教學互動網站 - 玩家競賽與記分板專區模組
+ */
+
+/* =========================================================
+   玩家競賽與記分板 (Player Selection & Scoreboard)
+   ========================================================= */
+/* =========================================================
+   玩家競賽與記分板 (Player Selection & Scoreboard)
+   ========================================================= */
+function bindScoreboard() {
+  if (DOM.btnCountPlus) {
+    DOM.btnCountPlus.addEventListener('click', () => {
+      if (state.playerCount < 8) {
+        state.playerCount++;
+        playSubtleTapSound();
+        renderScoreboard();
+      }
+    });
+  }
+
+  if (DOM.btnCountMinus) {
+    DOM.btnCountMinus.addEventListener('click', () => {
+      if (state.playerCount > 1) {
+        state.playerCount--;
+        if (state.activePlayerIndex >= state.playerCount) {
+          state.activePlayerIndex = 0;
+        }
+        playSubtleTapSound();
+        renderScoreboard();
+      }
+    });
+  }
+
+  if (DOM.btnChangeAvatarTop) {
+    DOM.btnChangeAvatarTop.addEventListener('click', () => {
+      openAvatarModal(state.activePlayerIndex);
+    });
+  }
+
+  if (DOM.btnResetScores) {
+    DOM.btnResetScores.addEventListener('click', () => {
+      state.players.forEach(p => p.score = 0);
+      renderScoreboard();
+      playRestoreSound();
+    });
+  }
+}
+
+function renderScoreboard(animatedPlayerId = null) {
+  if (DOM.playerCountVal) {
+    DOM.playerCountVal.textContent = state.playerCount + ' 人';
+  }
+  if (DOM.btnCountMinus) {
+    DOM.btnCountMinus.disabled = (state.playerCount <= 1);
+  }
+  if (DOM.btnCountPlus) {
+    DOM.btnCountPlus.disabled = (state.playerCount >= 8);
+  }
+
+  if (!DOM.playersGrid) return;
+  DOM.playersGrid.innerHTML = '';
+
+  // 根據人數動態計算對稱均衡的網格欄數，避免 5+3 缺角 (8人採 4x2 對稱排列)
+  const count = state.playerCount;
+  let cols;
+  if (count <= 4) {
+    cols = count;
+  } else if (count === 5) {
+    cols = 5;
+  } else if (count === 6) {
+    cols = 3; // 2 排，每排 3 人
+  } else {
+    cols = 4; // 7人 (4+3) 或 8人 (4+4 完美對稱 4x2)
+  }
+  DOM.playersGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+
+  for (let i = 0; i < state.playerCount; i++) {
+    const p = state.players[i];
+    const isCurrent = (i === state.activePlayerIndex);
+
+    const card = document.createElement('div');
+    card.className = 'player-card' + (isCurrent ? ' active-turn' : '');
+    card.dataset.playerIndex = i;
+    if (isCurrent) {
+      card.style.borderColor = p.color;
+      card.style.boxShadow = `0 4px 14px ${p.color}2e`;
+    }
+
+    const popClass = (animatedPlayerId === p.id) ? ' score-pop' : '';
+
+    card.innerHTML = `
+      <div class="player-info-left">
+        <div class="player-avatar" style="border: 2px solid ${p.color};" data-player="${i}" title="點擊更換此玩家頭貼">
+          ${p.avatar}
+        </div>
+        <div class="player-name-block">
+          <div class="player-name-row">
+            <span class="player-name" style="color: ${isCurrent ? p.color : '#1e293b'};">${p.name}</span>
+            ${isCurrent ? '<span class="player-active-tag">🎯 作答</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="player-score-pill">
+        <span class="score-num${popClass}" id="scoreNum_${p.id}">${p.score}</span>
+        <span class="score-unit">分</span>
+      </div>
+    `;
+
+    // 點擊卡片切換作答玩家，點選頭貼直接更換頭貼
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.player-avatar')) {
+        openAvatarModal(i);
+        return;
+      }
+      if (state.activePlayerIndex !== i) {
+        state.activePlayerIndex = i;
+        playSubtleTapSound();
+        renderScoreboard();
+      }
+    });
+
+    DOM.playersGrid.appendChild(card);
+  }
+}
+
+/* =========================================================
+   頭貼選擇彈窗 (Avatar Modal)
+   ========================================================= */
+function bindAvatarModal() {
+  if (DOM.avatarModalCloseBtn) {
+    DOM.avatarModalCloseBtn.addEventListener('click', () => {
+      closeAvatarModal();
+    });
+  }
+
+  if (DOM.avatarModal) {
+    DOM.avatarModal.addEventListener('click', (e) => {
+      if (e.target === DOM.avatarModal) {
+        closeAvatarModal();
+      }
+    });
+  }
+
+  if (DOM.avatarThemeTabs) {
+    DOM.avatarThemeTabs.addEventListener('click', (e) => {
+      const btn = e.target.closest('.avatar-tab-btn');
+      if (!btn) return;
+      DOM.avatarThemeTabs.querySelectorAll('.avatar-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.currentAvatarTheme = btn.dataset.theme;
+      renderAvatarGrid();
+      playSubtleTapSound();
+    });
+  }
+}
+
+function openAvatarModal(playerIndex) {
+  state.currentAvatarPlayerIndex = playerIndex;
+  state.activePlayerIndex = playerIndex;
+  renderScoreboard();
+
+  const p = state.players[playerIndex];
+  if (DOM.avatarModalTitle) {
+    DOM.avatarModalTitle.textContent = `為【${p.name}】選擇頭貼`;
+  }
+  renderAvatarGrid();
+  if (DOM.avatarModal) {
+    DOM.avatarModal.classList.add('open');
+  }
+  playCoinSound();
+}
+
+function closeAvatarModal() {
+  if (DOM.avatarModal) {
+    DOM.avatarModal.classList.remove('open');
+  }
+}
+
+function renderAvatarGrid() {
+  if (!DOM.avatarGrid) return;
+  DOM.avatarGrid.innerHTML = '';
+  const theme = state.currentAvatarTheme || 'animal';
+  const emojis = AVATAR_THEMES[theme] || AVATAR_THEMES.animal;
+
+  emojis.forEach(emoji => {
+    const btn = document.createElement('button');
+    btn.className = 'avatar-option-btn';
+    btn.textContent = emoji;
+    btn.title = `選擇 ${emoji}`;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.players[state.currentAvatarPlayerIndex].avatar = emoji;
+      renderScoreboard();
+      playCoinSound();
+      closeAvatarModal();
+    });
+    DOM.avatarGrid.appendChild(btn);
+  });
+}
+
+
+/* --- js/board_calc.js --- */
+/**
+ * 換錢與退位教學互動網站 - 直式運算、退位進位邏輯與題目產生模組
+ */
+
+/* =========================================================
+   退位判斷與邏輯 (Decomposition Logic)
+   ========================================================= */
+function canDecompose(place) {
+  // 只能在減法模式下退位
+  if (state.operation !== 'sub') return false;
+
+  // 只能退位一次！若已經退位過，不可重複退位
+  if (state.decomposed[place]) return false;
+
+  // 【資產確認】：該位數必須真正持有可用貨幣資金才能借出
+  // 換句話說除非該位數為 0，使用者可以直接借位
+  // 1. 原本有錢 (original > 0 且 num1[place] > 0)
+  // 2. 原本雖為 0，但前面已經退位給它 10 (borrowed >= 10)
+  const hasOriginal = state.num1[place] > 0 && state.vault[place].original > 0;
+  const hasBorrowed = state.vault[place].borrowed >= 10;
+  if (!hasOriginal && !hasBorrowed) return false;
+
+  // 【退位需求判定】：逐位借位 (十、百、千)，若前一位數為 0 則向前延伸借位
+  if (place === 'ten') {
+    // 十位退給個位：個位不夠減 (num1.one < num2.one)
+    if (state.num1.one >= state.num2.one) return false;
+  } else if (place === 'hundred') {
+    // 百位退給十位：
+    // 條件 1：十位本身扣除借出給個位後不夠減 (effTen < num2.ten)
+    // 條件 2：個位不夠減，但十位數為 0 無法借 10 (如圖 2，十位為 0 無法借位，只能從百位數借)
+    const effTen = state.num1.ten - (state.decomposed.ten ? 1 : 0) + (state.vault.ten.borrowed >= 10 ? 10 : 0);
+    const needTenBorrowForSelf = effTen < state.num2.ten;
+    const tenIsZeroAndCannotLend = (state.num1.one < state.num2.one && !state.decomposed.ten && (state.vault.ten.original <= 0 && state.vault.ten.borrowed < 10));
+    if (!needTenBorrowForSelf && !tenIsZeroAndCannotLend) return false;
+  } else if (place === 'thousand') {
+    // 千位退給百位：
+    // 條件 1：百位本身扣除借出給十位後不夠減 (effHundred < num2.hundred)
+    // 條件 2：後續位值需要借位，但百位數為 0 無法借 10 (如圖 1，百位為 0 無法借位，只能從千位數借)
+    const effTen = state.num1.ten - (state.decomposed.ten ? 1 : 0) + (state.vault.ten.borrowed >= 10 ? 10 : 0);
+    const effHundred = state.num1.hundred - (state.decomposed.hundred ? 1 : 0) + (state.vault.hundred.borrowed >= 10 ? 10 : 0);
+    const needHundredForSelf = effHundred < state.num2.hundred;
+
+    const needTenBorrow = (effTen < state.num2.ten) || (state.num1.one < state.num2.one && !state.decomposed.ten);
+    const hundredIsZeroAndCannotLend = needTenBorrow && (state.vault.hundred.original <= 0 && state.vault.hundred.borrowed < 10);
+
+    if (!needHundredForSelf && !hundredIsZeroAndCannotLend) return false;
+  }
+
+  return true;
+}
+
+/* =========================================================
+   退位演算法：只能退位一次，借1張變成10個給下一位
+   ========================================================= */
+function decompose(place) {
+  if (!canDecompose(place)) return;
+
+  let toPlace = '';
+  if (place === 'thousand') toPlace = 'hundred';
+  else if (place === 'hundred') toPlace = 'ten';
+  else if (place === 'ten') toPlace = 'one';
+  else return;
+
+  state.decomposed[place] = true;
+  // 若有高位借來之10 (borrowed >= 10)，優先調用借來之10 (borrowed 減 1 變 9)
+  // 否則扣除本位的原始貨幣 (original 減 1)
+  if (state.vault[place].borrowed >= 10) {
+    state.vault[place].borrowed -= 1;
+  } else if (state.vault[place].original > 0) {
+    state.vault[place].original -= 1;
+  }
+  state.vault[toPlace].borrowed += 10;
+
+  playCoinSound();
+  syncAll();
+}
+
+function restore(place) {
+  let toPlace = '';
+  if (place === 'thousand') toPlace = 'hundred';
+  else if (place === 'hundred') toPlace = 'ten';
+  else if (place === 'ten') toPlace = 'one';
+  else return;
+
+  if (state.decomposed[place] && state.vault[toPlace].borrowed >= 10) {
+    state.vault[toPlace].borrowed -= 10;
+    // 還原時：若借出時調用的是借來之款 (borrowed 從 10 變 9)，歸還給 borrowed (恢復為 10)
+    // 否則歸還給 original
+    if (state.vault[place].borrowed > 0 && state.vault[place].borrowed < 10) {
+      state.vault[place].borrowed += 1;
+    } else {
+      state.vault[place].original += 1;
+    }
+    state.decomposed[place] = false;
+
+    playRestoreSound();
+    syncAll();
+  }
+}
+
+/* =========================================================
+   加法進位判斷與演算法：優先判斷直式內是否真正構成進位條件
+   ========================================================= */
+function canCarry(toPlace) {
+  if (state.operation !== 'add') return false;
+
+  if (toPlace === 'ten') {
+    // 個位相加滿 10，向十位進位
+    return (state.num1.one + state.num2.one) >= 10;
+  } else if (toPlace === 'hundred') {
+    // 十位相加加上來自個位的進位滿 10，向百位進位
+    const carryIn = state.carries.ten || 0;
+    return (state.num1.ten + state.num2.ten + carryIn) >= 10;
+  } else if (toPlace === 'thousand') {
+    // 百位相加加上來自十位的進位滿 10，向千位進位
+    const carryIn = state.carries.hundred || 0;
+    return (state.num1.hundred + state.num2.hundred + carryIn) >= 10;
+  }
+  return false;
+}
+
+function toggleCarry(toPlace) {
+  if (state.operation !== 'add') return;
+
+  const fromPlace = (toPlace === 'ten' ? 'one' : (toPlace === 'hundred' ? 'ten' : (toPlace === 'thousand' ? 'hundred' : null)));
+
+  // 只能進位一次：只能是 0 或 1，不可重複進位
+  if (state.carries[toPlace] === 0) {
+    // 優先判斷直式內是否真正構成進位條件
+    if (!canCarry(toPlace)) {
+      playSubtleTapSound();
+      return;
+    }
+    state.carries[toPlace] = 1;
+
+    // 當直式有進行進位的動作時，互動台也應根據台內的金額進行進位換算
+    if (fromPlace && typeof carryConvertStage === 'function') {
+      const totalCoins = (state.vault[fromPlace].original || 0) + (state.vault[fromPlace].borrowed || 0);
+      if (totalCoins >= 10 && (!state.stageCarried || state.stageCarried[toPlace] === 0)) {
+        carryConvertStage(fromPlace, toPlace);
+        return;
+      }
+    }
+
+    playCoinSound();
+  } else {
+    state.carries[toPlace] = 0;
+    // 取消進位時，若連帶影響高位不再滿足進位條件，則自動取消更高位進位
+    if (toPlace === 'ten' && state.carries.hundred > 0 && !canCarry('hundred')) {
+      state.carries.hundred = 0;
+      if (typeof restoreCarryStage === 'function' && state.stageCarried && state.stageCarried.hundred > 0) {
+        restoreCarryStage('ten', 'hundred');
+      }
+      if (state.carries.thousand > 0 && !canCarry('thousand')) {
+        state.carries.thousand = 0;
+        if (typeof restoreCarryStage === 'function' && state.stageCarried && state.stageCarried.thousand > 0) {
+          restoreCarryStage('hundred', 'thousand');
+        }
+      }
+    } else if (toPlace === 'hundred' && state.carries.thousand > 0 && !canCarry('thousand')) {
+      state.carries.thousand = 0;
+      if (typeof restoreCarryStage === 'function' && state.stageCarried && state.stageCarried.thousand > 0) {
+        restoreCarryStage('hundred', 'thousand');
+      }
+    }
+
+    // 當直式取消進位時，互動台也還原進位換算
+    if (fromPlace && typeof restoreCarryStage === 'function' && state.stageCarried && state.stageCarried[toPlace] > 0) {
+      restoreCarryStage(fromPlace, toPlace);
+      return;
+    }
+
+    playRestoreSound();
+  }
+  syncAll();
+}
+
+function resetDecompositions() {
+  state.decomposed = {
+    thousand: false,
+    hundred: false,
+    ten: false
+  };
+  state.carries = {
+    thousand: 0,
+    hundred: 0,
+    ten: 0,
+    one: 0
+  };
+  state.stageCarried = {
+    thousand: 0,
+    hundred: 0,
+    ten: 0
+  };
+  state.vault = {
+    thousand: { original: state.digits === 4 ? state.num1.thousand : 0, borrowed: 0, carried: 0 },
+    hundred:  { original: state.num1.hundred, borrowed: 0, carried: 0 },
+    ten:      { original: state.num1.ten, borrowed: 0, carried: 0 },
+    one:      { original: state.num1.one, borrowed: 0, carried: 0 }
+  };
+  state.deductedItems = [];
+  initAdditionItems();
+  state.hEqRevealed = false;
+  state.problemAwarded = false;
+  state.answerBoxesVerified = false;
+  state.userAnswers = {
+    thousand: null,
+    hundred: null,
+    ten: null,
+    one: null
+  };
+  if (typeof closeNumberPicker === 'function') {
+    closeNumberPicker();
+  }
+}
+
+/* =========================================================
+   隨機出題演算法 (Random Problem Generation)
+   ========================================================= */
+function generateRandomProblem() {
+  let result;
+  if (state.operation === 'sub') {
+    result = generateRandomSubtraction(state.digits, state.advancedMode);
+  } else {
+    result = generateRandomAddition(state.digits, state.advancedMode);
+  }
+
+  state.num1 = result.num1;
+  state.num2 = result.num2;
+
+  resetDecompositions();
+  syncAll();
+  playCoinSound();
+}
+
+/**
+ * 隨機產生減法題目：
+ * 1. 被減數整數值大於減數 (val1 > val2)
+ * 2. 被減數各個位數的數字「不受限」，完全可以大於減數的數字（自然分布）
+ * 3. 題目中具有退位借位需求，符合教學目的
+ */
+function generateRandomSubtraction(digits, isAdvanced) {
+  let num1, num2;
+  let attempts = 0;
+
+  while (attempts++ < 200) {
+    if (isAdvanced) {
+      // 四位數減三位數 (減數千位為0)
+      const th1 = Math.floor(Math.random() * 8) + 1; // 1 ~ 8
+      const th2 = 0;
+      const hu1 = Math.floor(Math.random() * 10);
+      const hu2 = Math.floor(Math.random() * 9) + 1; // 1 ~ 9 (百位非0)
+      const te1 = Math.floor(Math.random() * 10);
+      const te2 = Math.floor(Math.random() * 10);
+      const on1 = Math.floor(Math.random() * 10);
+      const on2 = Math.floor(Math.random() * 10);
+
+      num1 = { thousand: th1, hundred: hu1, ten: te1, one: on1 };
+      num2 = { thousand: th2, hundred: hu2, ten: te2, one: on2 };
+    } else if (digits === 4) {
+      // 一般四位數減四位數
+      const th1 = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      const th2 = Math.floor(Math.random() * (th1 - 1)) + 1; // 1 ~ th1-1
+      const hu1 = Math.floor(Math.random() * 10);
+      const hu2 = Math.floor(Math.random() * 10);
+      const te1 = Math.floor(Math.random() * 10);
+      const te2 = Math.floor(Math.random() * 10);
+      const on1 = Math.floor(Math.random() * 10);
+      const on2 = Math.floor(Math.random() * 10);
+
+      num1 = { thousand: th1, hundred: hu1, ten: te1, one: on1 };
+      num2 = { thousand: th2, hundred: hu2, ten: te2, one: on2 };
+    } else {
+      // 一般三位數減三位數
+      const hu1 = Math.floor(Math.random() * 8) + 2; // 2 ~ 9
+      const hu2 = Math.floor(Math.random() * (hu1 - 1)) + 1; // 1 ~ hu1-1
+      const te1 = Math.floor(Math.random() * 10);
+      const te2 = Math.floor(Math.random() * 10);
+      const on1 = Math.floor(Math.random() * 10);
+      const on2 = Math.floor(Math.random() * 10);
+
+      num1 = { thousand: 0, hundred: hu1, ten: te1, one: on1 };
+      num2 = { thousand: 0, hundred: hu2, ten: te2, one: on2 };
+    }
+
+    const val1 = computeValue(num1);
+    const val2 = computeValue(num2);
+
+    if (val1 <= val2) continue;
+
+    // 需有退位需求（個位、十位或百位有小於減數處）
+    const hasBorrow = (num1.one < num2.one) || (num1.ten < num2.ten) || (digits === 4 && num1.hundred < num2.hundred);
+    if (!hasBorrow) continue;
+
+    return { num1, num2 };
+  }
+
+  // 預設備用
+  return {
+    num1: isAdvanced ? { thousand: 4, hundred: 6, ten: 2, one: 3 } : { thousand: 8, hundred: 4, ten: 3, one: 0 },
+    num2: isAdvanced ? { thousand: 0, hundred: 2, ten: 5, one: 8 } : { thousand: 1, hundred: 4, ten: 5, one: 8 }
+  };
+}
+
+/**
+ * 隨機產生加法題目
+ */
+function generateRandomAddition(digits, isAdvanced) {
+  if (isAdvanced) {
+    const isNum1ThreeDigits = Math.random() < 0.5;
+    let th1, hu1, th2, hu2;
+    if (isNum1ThreeDigits) {
+      th1 = 0;
+      hu1 = Math.floor(Math.random() * 9) + 1; // 1 ~ 9 (百位非0)
+      th2 = Math.floor(Math.random() * 6) + 1; // 1 ~ 6 (加數必為四位數)
+      hu2 = Math.floor(Math.random() * 10);
+    } else {
+      th1 = Math.floor(Math.random() * 6) + 1; // 1 ~ 6 (被加數必為四位數)
+      hu1 = Math.floor(Math.random() * 10);
+      th2 = 0;
+      hu2 = Math.floor(Math.random() * 9) + 1; // 1 ~ 9 (加數必為三位數)
+    }
+    const te1 = Math.floor(Math.random() * 10);
+    const te2 = Math.floor(Math.random() * 10);
+    const on1 = Math.floor(Math.random() * 10);
+    const on2 = Math.floor(Math.random() * 10);
+    return {
+      num1: { thousand: th1, hundred: hu1, ten: te1, one: on1 },
+      num2: { thousand: th2, hundred: hu2, ten: te2, one: on2 }
+    };
+  } else if (digits === 4) {
+    const th1 = Math.floor(Math.random() * 4) + 1;
+    const th2 = Math.floor(Math.random() * 4) + 1;
+    const hu1 = Math.floor(Math.random() * 10);
+    const hu2 = Math.floor(Math.random() * 10);
+    const te1 = Math.floor(Math.random() * 10);
+    const te2 = Math.floor(Math.random() * 10);
+    const on1 = Math.floor(Math.random() * 10);
+    const on2 = Math.floor(Math.random() * 10);
+    return {
+      num1: { thousand: th1, hundred: hu1, ten: te1, one: on1 },
+      num2: { thousand: th2, hundred: hu2, ten: te2, one: on2 }
+    };
+  } else {
+    const hu1 = Math.floor(Math.random() * 4) + 1;
+    const hu2 = Math.floor(Math.random() * 4) + 1;
+    const te1 = Math.floor(Math.random() * 10);
+    const te2 = Math.floor(Math.random() * 10);
+    const on1 = Math.floor(Math.random() * 10);
+    const on2 = Math.floor(Math.random() * 10);
+    return {
+      num1: { thousand: 0, hundred: hu1, ten: te1, one: on1 },
+      num2: { thousand: 0, hundred: hu2, ten: te2, one: on2 }
+    };
+  }
+}
+
+
+/* --- js/board_render.js --- */
+/**
+ * 換錢與退位教學互動網站 - 直式與橫式板面渲染與數字鍵盤輸入模組
+ */
+
+let activePickerPlace = null;
+
+function bindNumberPicker() {
+  if (!DOM.answerNumberPicker) return;
+
+  const digitBtns = DOM.answerNumberPicker.querySelectorAll('.picker-digit-btn');
+  digitBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const digit = parseInt(btn.dataset.digit, 10);
+      if (activePickerPlace) {
+        state.userAnswers[activePickerPlace] = digit;
+        state.answerBoxesVerified = false;
+        playCoinSound();
+        renderBoard();
+      }
+      closeNumberPicker();
+    });
+  });
+
+  if (DOM.pickerClearBtn) {
+    DOM.pickerClearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (activePickerPlace) {
+        state.userAnswers[activePickerPlace] = null;
+        state.answerBoxesVerified = false;
+        playSubtleTapSound();
+        renderBoard();
+      }
+      closeNumberPicker();
+    });
+  }
+
+  if (DOM.pickerCloseBtn) {
+    DOM.pickerCloseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeNumberPicker();
+    });
+  }
+
+  document.addEventListener('click', (e) => {
+    if (DOM.answerNumberPicker &&
+        DOM.answerNumberPicker.style.display !== 'none' &&
+        !DOM.answerNumberPicker.contains(e.target) &&
+        !e.target.closest('.answer-digit-box')) {
+      closeNumberPicker();
+    }
+  });
+}
+
+function openNumberPicker(place, triggerElement) {
+  activePickerPlace = place;
+  if (!DOM.answerNumberPicker || !triggerElement) return;
+
+  DOM.pickerTitle.textContent = `選擇 ${PLACE_NAMES[place]} 數字`;
+
+  const rect = triggerElement.getBoundingClientRect();
+  DOM.answerNumberPicker.style.display = 'flex';
+
+  const pickerWidth = 230;
+  const pickerHeight = 145;
+  let left = rect.left + window.scrollX + (rect.width / 2) - (pickerWidth / 2);
+  let top = rect.bottom + window.scrollY + 8;
+
+  // 若下方空間不足，則顯示在上方
+  if (rect.bottom + pickerHeight > window.innerHeight && (rect.top - pickerHeight) > 10) {
+    top = rect.top + window.scrollY - pickerHeight - 8;
+  }
+
+  if (left < 10) left = 10;
+  if (left + pickerWidth > window.innerWidth - 10) {
+    left = window.innerWidth - pickerWidth - 10;
+  }
+
+  DOM.answerNumberPicker.style.left = left + 'px';
+  DOM.answerNumberPicker.style.top = top + 'px';
+  playSubtleTapSound();
+}
+
+function closeNumberPicker() {
+  if (DOM.answerNumberPicker) {
+    DOM.answerNumberPicker.style.display = 'none';
+  }
+  activePickerPlace = null;
+}
+
+/* =========================================================
+   直式板面點擊事件綁定
+   ========================================================= */
+function bindBoardClicks() {
+  const num1Boxes = [
+    { el: DOM.targetNum1Thousand, place: 'thousand' },
+    { el: DOM.targetNum1Hundred,  place: 'hundred' },
+    { el: DOM.targetNum1Ten,      place: 'ten' },
+    { el: DOM.targetNum1One,      place: 'one' }
+  ];
+
+  num1Boxes.forEach(({ el, place }) => {
+    el.addEventListener('click', () => {
+      if (state.operation === 'sub') {
+        // 減法模式：退位 (只能退位一次，若數字為0則無法退位)
+        if (place === 'one') {
+          playSubtleTapSound();
+          return;
+        }
+
+        if (canDecompose(place)) {
+          let toPlace = place === 'thousand' ? 'hundred' : (place === 'hundred' ? 'ten' : 'one');
+          if (typeof triggerDecomposeAnimation === 'function') {
+            triggerDecomposeAnimation(place, toPlace, () => decompose(place));
+          } else {
+            decompose(place);
+          }
+        } else {
+          playSubtleTapSound();
+        }
+      } else {
+        // 加法模式：進位 (只能進位一次，個位進十位、十位進百位、百位進千位)
+        if (place === 'one') {
+          toggleCarry('ten');
+        } else if (place === 'ten') {
+          toggleCarry('hundred');
+        } else if (place === 'hundred') {
+          toggleCarry('thousand');
+        } else {
+          playSubtleTapSound();
+        }
+      }
+    });
+
+    el.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+  });
+
+  const num2Boxes = [
+    { el: DOM.targetNum2Thousand, place: 'thousand' },
+    { el: DOM.targetNum2Hundred,  place: 'hundred' },
+    { el: DOM.targetNum2Ten,      place: 'ten' },
+    { el: DOM.targetNum2One,      place: 'one' }
+  ];
+
+  num2Boxes.forEach(({ el }) => {
+    el.addEventListener('click', () => {
+      // 減數數字單純可點擊，不具備彈出或修改功能
+      playSubtleTapSound();
+    });
+    el.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+    });
+  });
+
+  // 直式答案方框點擊開啟數字選擇面板
+  const resBoxes = [
+    { el: DOM.targetResThousand, place: 'thousand' },
+    { el: DOM.targetResHundred,  place: 'hundred' },
+    { el: DOM.targetResTen,      place: 'ten' },
+    { el: DOM.targetResOne,      place: 'one' }
+  ];
+
+  resBoxes.forEach(({ el, place }) => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openNumberPicker(place, el);
+    });
+  });
+}
+
+/* =========================================================
+   橫式算式渲染
+   ========================================================= */
+function renderHorizontalEquation() {
+  const val1 = computeValue(state.num1);
+  const val2 = computeValue(state.num2);
+  const resVal = state.operation === 'sub' ? Math.max(0, val1 - val2) : (val1 + val2);
+
+  DOM.hEqNum1.textContent = val1;
+  DOM.hEqNum2.textContent = val2;
+
+  // 只有按下檢查答案且正確之後才會顯示橫式答案，其餘時間顯示「？」
+  if (state.hEqRevealed) {
+    DOM.hEqRes.textContent = resVal;
+    DOM.hEqRes.className = 'h-eq-res revealed-res';
+  } else {
+    DOM.hEqRes.textContent = '？';
+    DOM.hEqRes.className = 'h-eq-res hidden-res';
+  }
+}
+
+/* =========================================================
+   直式算式表格渲染
+   ========================================================= */
+function renderBoard() {
+  const val1 = computeValue(state.num1);
+  const val2 = computeValue(state.num2);
+  const resVal = state.operation === 'sub' ? Math.max(0, val1 - val2) : (val1 + val2);
+  const resStr = String(resVal).padStart(4, '0');
+
+  if (state.operation === 'sub') {
+    // 減法模式：顯示「退位」
+    if (DOM.borrowRowLabel) {
+      DOM.borrowRowLabel.textContent = '退位';
+      DOM.borrowRowLabel.className = 'grid-text-label red';
+    }
+
+    // 被減數劃線與角標呈現 (若本位已借出且有高位借款佔據上方退位槽，原扣1剩餘值移至數字旁)
+    ['thousand', 'hundred', 'ten', 'one'].forEach(place => {
+      const el = DOM['targetNum1' + capitalize(place)];
+      const origVal = state.num1[place];
+
+      // 4位數千位為0時顯示空白
+      if (state.digits === 4 && place === 'thousand' && origVal === 0) {
+        el.innerHTML = '';
+        el.classList.remove('slashed');
+        return;
+      }
+
+      // 只有當本位原始數額被扣除時才劃線
+      const isOriginalDeducted = state.decomposed[place] && (state.vault[place].original < origVal);
+
+      if (isOriginalDeducted) {
+        el.classList.add('slashed');
+      } else {
+        el.classList.remove('slashed');
+      }
+
+      // 判斷該位值是否獲得更高位借款：
+      // 百位的高位是千位 (四位數且 decomposed.thousand)
+      // 十位的高位是百位 (decomposed.hundred)
+      let hasHigherBorrow = false;
+      if (place === 'hundred' && state.digits === 4 && state.decomposed.thousand) {
+        hasHigherBorrow = true;
+      } else if (place === 'ten' && state.decomposed.hundred) {
+        hasHigherBorrow = true;
+      }
+
+      let subRemHtml = '';
+      // 若本位原始數額已借出(扣1)，且同時上方已有更高位借入之10佔據上方退位槽，
+      // 則原先扣1後剩餘的數值移動至被劃掉數字的旁邊 (右上角小紅框角標)
+      if (isOriginalDeducted && hasHigherBorrow) {
+        subRemHtml = `<span class="num1-sub-rem" title="點擊還原">${origVal - 1}</span>`;
+      }
+
+      el.innerHTML = `<span class="num1-digit-text">${origVal}</span>${subRemHtml}`;
+    });
+
+    // 退位紅框呈現 (完全對照教學板書與圖1、圖2、附圖)：
+    // 1. 若該位值無高位借款，借出後剩餘值直接顯示在正上方退位槽 (如圖1中百位9借出後上方顯示8，或十位單獨借出後上方顯示5)
+    // 2. 若該位值有高位借入之10：
+    //    - 上方退位槽顯示高位借來的 10 (或調用借款後的 9)
+    //    - 若本位原本已扣1借出，原扣1剩餘值自動移至被劃掉數字旁邊 (如附圖中百位借10給十位，原先的5移動至6的旁邊)
+    // 3. 獲取借位的位值上方顯示紅框 10
+    if (state.digits === 4) {
+      DOM.borrowSlotThousand.innerHTML = state.decomposed.thousand
+        ? `<span class="red-borrow-pill" title="點擊還原">${state.num1.thousand - 1}</span>`
+        : '';
+
+      if (state.decomposed.thousand) {
+        // 千位借給百位：百位上方獲借 10
+        // 若百位原為0調用借款借出給十位，上方 10 變為 9；
+        // 若百位原本>0，借出給十位時扣的是百位 original (剩餘值移至百位旁)，上方依然顯示千位借來的 10
+        if (state.decomposed.hundred && state.vault.hundred.original === state.num1.hundred) {
+          DOM.borrowSlotHundred.innerHTML = `<span class="red-borrow-pill" title="點擊還原">9</span>`;
+        } else {
+          DOM.borrowSlotHundred.innerHTML = `<span class="red-borrow-pill" title="點擊還原">10</span>`;
+        }
+      } else if (state.decomposed.hundred) {
+        // 千位沒有借給百位，但百位借給十位：百位剩餘數字直接顯示在正上方
+        DOM.borrowSlotHundred.innerHTML = `<span class="red-borrow-pill" title="點擊還原">${state.num1.hundred - 1}</span>`;
+      } else {
+        DOM.borrowSlotHundred.innerHTML = '';
+      }
+
+      if (state.decomposed.hundred) {
+        // 百位借給十位：十位上方獲借 10
+        // 若十位原為0調用借款借出給個位，上方 10 變為 9；
+        // 若十位原本>0扣除 original (例如十位6借出變5)，5 移動至 6 旁邊，十位上方顯示百位借來的 10！
+        if (state.decomposed.ten && state.vault.ten.original === state.num1.ten) {
+          DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">9</span>`;
+        } else {
+          DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">10</span>`;
+        }
+      } else if (state.decomposed.ten) {
+        // 百位沒有借給十位，但十位借給個位：十位剩餘數字直接顯示在正上方 (如附圖中的 5)
+        DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">${state.num1.ten - 1}</span>`;
+      } else {
+        DOM.borrowSlotTen.innerHTML = '';
+      }
+
+      DOM.borrowSlotOne.innerHTML = state.decomposed.ten
+        ? `<span class="red-borrow-pill" title="點擊還原">10</span>`
+        : '';
+    } else {
+      DOM.borrowSlotThousand.innerHTML = '';
+
+      DOM.borrowSlotHundred.innerHTML = state.decomposed.hundred
+        ? `<span class="red-borrow-pill" title="點擊還原">${state.num1.hundred - 1}</span>`
+        : '';
+
+      if (state.decomposed.hundred) {
+        if (state.decomposed.ten && state.vault.ten.original === state.num1.ten) {
+          DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">9</span>`;
+        } else {
+          DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">10</span>`;
+        }
+      } else if (state.decomposed.ten) {
+        DOM.borrowSlotTen.innerHTML = `<span class="red-borrow-pill" title="點擊還原">${state.num1.ten - 1}</span>`;
+      } else {
+        DOM.borrowSlotTen.innerHTML = '';
+      }
+
+      DOM.borrowSlotOne.innerHTML = state.decomposed.ten
+        ? `<span class="red-borrow-pill" title="點擊還原">10</span>`
+        : '';
+    }
+
+    // 紅框與角標點擊還原事件綁定
+    const redPills = DOM.boardGridTable.querySelectorAll('.red-borrow-pill, .num1-sub-rem');
+    redPills.forEach(pill => {
+      pill.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (pill.classList.contains('num1-sub-rem')) {
+          // 點擊被減數旁邊剩餘數字角標還原
+          const parentCell = pill.closest('.digit-target-num1');
+          if (parentCell === DOM.targetNum1Ten) restore('ten');
+          else if (parentCell === DOM.targetNum1Hundred) restore('hundred');
+          return;
+        }
+
+        const slot = pill.closest('.borrow-box-slot');
+        if (slot === DOM.borrowSlotOne) {
+          restore('ten');
+        } else if (slot === DOM.borrowSlotTen) {
+          // 若十位獲百位借款，點擊十位上方退位槽還原百位借款；否則還原十位借款
+          if (state.decomposed.hundred) restore('hundred');
+          else restore('ten');
+        } else if (slot === DOM.borrowSlotHundred) {
+          if (state.digits === 3) {
+            restore('hundred');
+          } else {
+            if (state.decomposed.thousand) restore('thousand');
+            else restore('hundred');
+          }
+        } else if (slot === DOM.borrowSlotThousand) {
+          restore('thousand');
+        }
+      });
+    });
+
+  } else {
+    // 加法模式：顯示「進位」
+    if (DOM.borrowRowLabel) {
+      DOM.borrowRowLabel.textContent = '進位';
+      DOM.borrowRowLabel.className = 'grid-text-label blue';
+    }
+
+    // 加法模式不劃線
+    ['thousand', 'hundred', 'ten', 'one'].forEach(place => {
+      const el = DOM['targetNum1' + capitalize(place)];
+      const origVal = state.num1[place];
+      el.classList.remove('slashed');
+      if (state.digits === 4 && place === 'thousand' && origVal === 0) {
+        el.innerHTML = '';
+      } else {
+        el.innerHTML = `<span class="num1-digit-text">${origVal}</span>`;
+      }
+    });
+
+    // 個位無進位槽
+    DOM.borrowSlotOne.innerHTML = '';
+
+    // 優先判斷直式內是否真正構成進位條件 (若不滿足進位條件則自動歸零)
+    if (state.carries.ten > 0 && !canCarry('ten')) {
+      state.carries.ten = 0;
+    }
+    if (state.carries.hundred > 0 && !canCarry('hundred')) {
+      state.carries.hundred = 0;
+    }
+    if (state.carries.thousand > 0 && !canCarry('thousand')) {
+      state.carries.thousand = 0;
+    }
+
+    // 十位進位 (由個位相加滿 10 進位)
+    DOM.borrowSlotTen.innerHTML = state.carries.ten > 0
+      ? `<span class="blue-carry-pill" title="點擊取消進位">${state.carries.ten}</span>`
+      : '';
+
+    // 百位進位 (由十位相加滿 10 進位)
+    DOM.borrowSlotHundred.innerHTML = state.carries.hundred > 0
+      ? `<span class="blue-carry-pill" title="點擊取消進位">${state.carries.hundred}</span>`
+      : '';
+
+    // 千位進位 (由百位相加滿 10 進位)
+    DOM.borrowSlotThousand.innerHTML = state.carries.thousand > 0
+      ? `<span class="blue-carry-pill" title="點擊取消進位">${state.carries.thousand}</span>`
+      : '';
+
+    // 點擊進位槽（包含藍標記或空格）支援切換/取消進位
+    [
+      { slot: DOM.borrowSlotTen, toPlace: 'ten' },
+      { slot: DOM.borrowSlotHundred, toPlace: 'hundred' },
+      { slot: DOM.borrowSlotThousand, toPlace: 'thousand' }
+    ].forEach(({ slot, toPlace }) => {
+      if (!slot) return;
+      slot.onclick = (e) => {
+        e.stopPropagation();
+        toggleCarry(toPlace);
+      };
+    });
+  }
+
+  // 減數顯示（三位數時不需要千位數的0，留白即可，不劃掉）
+  DOM.targetNum2Hundred.textContent = state.num2.hundred;
+  DOM.targetNum2Ten.textContent = state.num2.ten;
+  DOM.targetNum2One.textContent = state.num2.one;
+
+  DOM.targetNum2Thousand.classList.remove('slashed');
+  DOM.targetNum2Hundred.classList.remove('slashed');
+
+  if (state.digits === 4) {
+    if (state.num2.thousand === 0) {
+      DOM.targetNum2Thousand.textContent = '';
+    } else {
+      DOM.targetNum2Thousand.textContent = state.num2.thousand;
+    }
+  } else {
+    DOM.targetNum2Thousand.textContent = '';
+  }
+
+  // 答案框渲染
+  ['thousand', 'hundred', 'ten', 'one'].forEach((place, idx) => {
+    const box = document.createElement('div');
+    box.className = 'answer-digit-box';
+    const userVal = state.userAnswers[place];
+
+    if (userVal !== null && userVal !== undefined) {
+      box.textContent = userVal;
+      box.classList.add('filled');
+    } else {
+      box.textContent = '？';
+      box.classList.add('empty');
+    }
+
+    // 若答案為三位數 (resVal < 1000)，當使用者在千位數選擇 0 時，自動將 0 做一個劃掉的記號 (如圖2)
+    if (state.digits === 4 && place === 'thousand' && userVal === 0 && resVal < 1000) {
+      box.classList.add('slashed');
+    }
+
+    if (state.answerBoxesVerified) {
+      const expectedChar = resStr[idx];
+      // 正確判定：數值相符，或三位數答案時千位填 0
+      const isExpected = (userVal === parseInt(expectedChar, 10)) || (place === 'thousand' && resVal < 1000 && userVal === 0);
+      if (isExpected) {
+        box.classList.add('correct');
+      } else {
+        box.classList.add('wrong');
+      }
+    }
+
+    const cell = DOM['targetRes' + capitalize(place)];
+    cell.innerHTML = '';
+    cell.appendChild(box);
+  });
+}
+
+
+/* --- js/board.js --- */
+/**
+ * 換錢與退位教學互動網站 - 直式與橫式位值板整合入口 (Board Module)
+ * 子模組拆分：
+ * - js/board_calc.js: 退位進位邏輯、自身相減能力驗證與題目隨機生成演算法
+ * - js/board_render.js: 直式與橫式板面渲染、劃線紅框控制與數字選擇鍵盤
+ */
+
+/* =========================================================
+   退位與還原按鈕動作事件綁定
+   ========================================================= */
+function bindDecomposeActions() {
+  if (DOM.btnDecomposeThousand) {
+    DOM.btnDecomposeThousand.addEventListener('click', () => {
+      if (typeof triggerDecomposeAnimation === 'function') {
+        triggerDecomposeAnimation('thousand', 'hundred', () => decompose('thousand'));
+      } else {
+        decompose('thousand');
+      }
+    });
+  }
+  if (DOM.btnRestoreThousand) {
+    DOM.btnRestoreThousand.addEventListener('click', () => restore('thousand'));
+  }
+
+  if (DOM.btnDecomposeHundred) {
+    DOM.btnDecomposeHundred.addEventListener('click', () => {
+      if (typeof triggerDecomposeAnimation === 'function') {
+        triggerDecomposeAnimation('hundred', 'ten', () => decompose('hundred'));
+      } else {
+        decompose('hundred');
+      }
+    });
+  }
+  if (DOM.btnRestoreHundred) {
+    DOM.btnRestoreHundred.addEventListener('click', () => restore('hundred'));
+  }
+
+  if (DOM.btnDecomposeTen) {
+    DOM.btnDecomposeTen.addEventListener('click', () => {
+      if (typeof triggerDecomposeAnimation === 'function') {
+        triggerDecomposeAnimation('ten', 'one', () => decompose('ten'));
+      } else {
+        decompose('ten');
+      }
+    });
+  }
+  if (DOM.btnRestoreTen) {
+    DOM.btnRestoreTen.addEventListener('click', () => restore('ten'));
+  }
+}
+
+
+/* --- js/stage_coins.js --- */
+/**
+ * 換錢與退位教學互動網站 - 舞台錢幣渲染、拖曳與飛行動畫模組 (Stage Coins Module)
+ */
+
+function createPure1000Bill() {
+  const el = document.createElement('div');
+  el.className = 'cash-bill-1000';
+  el.innerHTML = `<span class="pure-val-1000">1000</span>`;
+  return el;
+}
+
+function createPure100Bill() {
+  const el = document.createElement('div');
+  el.className = 'cash-bill-100';
+  el.innerHTML = `<span class="pure-val-100">100</span>`;
+  return el;
+}
+
+function createPure10Coin() {
+  const el = document.createElement('div');
+  el.className = 'cash-coin-10';
+  el.innerHTML = `<span class="pure-val-10">10</span>`;
+  return el;
+}
+
+function createPure1Coin() {
+  const el = document.createElement('div');
+  el.className = 'cash-coin-1';
+  el.innerHTML = `<span class="pure-val-1">1</span>`;
+  return el;
+}
+
+function computeVaultTotal() {
+  let total = 0;
+  ['thousand', 'hundred', 'ten', 'one'].forEach(p => {
+    total += (state.vault[p].original + state.vault[p].borrowed + (state.vault[p].carried || 0)) * PLACE_VALUES[p];
+  });
+  return total;
+}
+
+function getVaultElement(place) {
+  return DOM['vault' + capitalize(place)] || document.getElementById('vault' + capitalize(place));
+}
+
+/**
+ * 封裝舞台錢幣的點擊（退位/進位/返回）與拖曳（拖至扣錢/加錢區）功能
+ */
+function makeStageDraggableMoney(item, place, isBorrowed, isCarried) {
+  item.setAttribute('draggable', 'true');
+  if (state.operation === 'sub') {
+    item.title = state.deductMode ? '點擊直接扣除至扣錢區，亦可拖曳扣除' : '點擊退位換算，或拖曳至下方扣錢區扣除';
+  } else {
+    item.title = state.deductMode ? '點擊返回台下加錢區，亦可拖曳返回' : '點擊進位換算，或拖曳至下方加錢區返回台下';
+  }
+
+  item.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('application/json', JSON.stringify({
+      source: 'vault',
+      place: place,
+      isBorrowed: isBorrowed,
+      isCarried: isCarried
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+    item.classList.add('dragging-currency');
+  });
+
+  item.addEventListener('dragend', () => {
+    item.classList.remove('dragging-currency');
+  });
+
+  item.addEventListener('click', (e) => {
+    e.stopPropagation();
+    handleMoneyClick(place, item, isBorrowed, isCarried);
+  });
+
+  return item;
+}
+
+/* =========================================================
+   舞台錢幣欄位渲染
+   ========================================================= */
+function renderVaultColumn({ place, originalCount, borrowedCount, carriedCount = 0, vaultEl, badgeEl, unitName, nominalVal, createItemFn }) {
+  vaultEl.innerHTML = '';
+  const totalCount = originalCount + borrowedCount + carriedCount;
+  badgeEl.textContent = `${totalCount} ${unitName} (${totalCount * nominalVal}元)`;
+
+  const isBill = (place === 'thousand' || place === 'hundred');
+  const gridClass = isBill ? 'bills-pair-grid' : 'coins-five-grid';
+
+  // 1. 常規原有錢幣 (Original Money)
+  if (originalCount > 0) {
+    const origContainer = document.createElement('div');
+    origContainer.className = 'original-group';
+
+    const grid = document.createElement('div');
+    grid.className = gridClass;
+
+    for (let i = 0; i < originalCount; i++) {
+      const item = makeStageDraggableMoney(createItemFn(), place, false, false);
+      grid.appendChild(item);
+    }
+    origContainer.appendChild(grid);
+    vaultEl.appendChild(origContainer);
+  }
+
+  // 2. 退位換算來的錢幣 (Borrowed Money)
+  if (borrowedCount > 0) {
+    const fullGroupsOf10 = Math.floor(borrowedCount / 10);
+    const remainder = borrowedCount % 10;
+
+    for (let g = 0; g < fullGroupsOf10; g++) {
+      const tenBox = document.createElement('div');
+      tenBox.className = 'ten-group-box';
+
+      const tag = document.createElement('div');
+      tag.className = 'ten-group-tag';
+      tag.innerHTML = `<span>📦</span> 十個一組 (${isBill ? '10張' : '10個'})`;
+      tenBox.appendChild(tag);
+
+      const grid = document.createElement('div');
+      grid.className = gridClass;
+
+      for (let i = 0; i < 10; i++) {
+        const item = makeStageDraggableMoney(createItemFn(), place, true, false);
+        grid.appendChild(item);
+      }
+      tenBox.appendChild(grid);
+      vaultEl.appendChild(tenBox);
+    }
+
+    if (remainder > 0) {
+      const remainderGroup = document.createElement('div');
+      remainderGroup.className = 'borrowed-sub-group';
+
+      const grid = document.createElement('div');
+      grid.className = gridClass;
+
+      for (let i = 0; i < remainder; i++) {
+        const item = makeStageDraggableMoney(createItemFn(), place, true, false);
+        grid.appendChild(item);
+      }
+      remainderGroup.appendChild(grid);
+      vaultEl.appendChild(remainderGroup);
+    }
+  }
+
+  // 3. 加法進位換算來的錢幣 (Carried Money)
+  if (carriedCount > 0) {
+    const carryContainer = document.createElement('div');
+    carryContainer.className = 'carried-group';
+
+    const tag = document.createElement('div');
+    tag.className = 'carried-group-tag';
+    tag.innerHTML = `<span>⬆️</span> 進位而來 (${carriedCount} ${unitName})`;
+    carryContainer.appendChild(tag);
+
+    const grid = document.createElement('div');
+    grid.className = gridClass;
+
+    for (let i = 0; i < carriedCount; i++) {
+      const item = makeStageDraggableMoney(createItemFn(), place, false, true);
+      grid.appendChild(item);
+    }
+    carryContainer.appendChild(grid);
+    vaultEl.appendChild(carryContainer);
+  }
+}
+
+function renderMoneyVaults() {
+  const vaultTotal = computeVaultTotal();
+  DOM.stageTotalVal.textContent = vaultTotal;
+
+  // 千位
+  renderVaultColumn({
+    place: 'thousand',
+    originalCount: state.vault.thousand.original,
+    borrowedCount: state.vault.thousand.borrowed,
+    carriedCount: state.vault.thousand.carried || 0,
+    vaultEl: DOM.vaultThousand,
+    badgeEl: DOM.countBadgeThousand,
+    unitName: '張',
+    nominalVal: 1000,
+    createItemFn: createPure1000Bill
+  });
+
+  // 百位
+  renderVaultColumn({
+    place: 'hundred',
+    originalCount: state.vault.hundred.original,
+    borrowedCount: state.vault.hundred.borrowed,
+    carriedCount: state.vault.hundred.carried || 0,
+    vaultEl: DOM.vaultHundred,
+    badgeEl: DOM.countBadgeHundred,
+    unitName: '張',
+    nominalVal: 100,
+    createItemFn: createPure100Bill
+  });
+
+  // 十位
+  renderVaultColumn({
+    place: 'ten',
+    originalCount: state.vault.ten.original,
+    borrowedCount: state.vault.ten.borrowed,
+    carriedCount: state.vault.ten.carried || 0,
+    vaultEl: DOM.vaultTen,
+    badgeEl: DOM.countBadgeTen,
+    unitName: '個',
+    nominalVal: 10,
+    createItemFn: createPure10Coin
+  });
+
+  // 個位
+  renderVaultColumn({
+    place: 'one',
+    originalCount: state.vault.one.original,
+    borrowedCount: state.vault.one.borrowed,
+    carriedCount: state.vault.one.carried || 0,
+    vaultEl: DOM.vaultOne,
+    badgeEl: DOM.countBadgeOne,
+    unitName: '個',
+    nominalVal: 1,
+    createItemFn: createPure1Coin
+  });
+
+  // 底部換算按鈕 (減法顯示退位換算，加法顯示進位換算)
+  if (state.operation === 'sub') {
+    DOM.btnDecomposeThousand.style.display = '';
+    DOM.btnDecomposeHundred.style.display = '';
+    DOM.btnDecomposeTen.style.display = '';
+    DOM.btnDecomposeThousand.disabled = !canDecompose('thousand');
+    DOM.btnDecomposeHundred.disabled = !canDecompose('hundred');
+    DOM.btnDecomposeTen.disabled = !canDecompose('ten');
+    DOM.btnRestoreThousand.style.display = state.decomposed.thousand ? '' : 'none';
+    DOM.btnRestoreHundred.style.display = state.decomposed.hundred ? '' : 'none';
+    DOM.btnRestoreTen.style.display = state.decomposed.ten ? '' : 'none';
+
+    if (DOM.btnCarryOne) DOM.btnCarryOne.style.display = 'none';
+    if (DOM.btnRestoreCarryOne) DOM.btnRestoreCarryOne.style.display = 'none';
+    if (DOM.btnCarryTen) DOM.btnCarryTen.style.display = 'none';
+    if (DOM.btnRestoreCarryTen) DOM.btnRestoreCarryTen.style.display = 'none';
+    if (DOM.btnCarryHundred) DOM.btnCarryHundred.style.display = 'none';
+    if (DOM.btnRestoreCarryHundred) DOM.btnRestoreCarryHundred.style.display = 'none';
+  } else {
+    DOM.btnDecomposeThousand.style.display = 'none';
+    DOM.btnDecomposeHundred.style.display = 'none';
+    DOM.btnDecomposeTen.style.display = 'none';
+    DOM.btnRestoreThousand.style.display = 'none';
+    DOM.btnRestoreHundred.style.display = 'none';
+    DOM.btnRestoreTen.style.display = 'none';
+
+    const countOne = (state.vault.one.original || 0) + (state.vault.one.borrowed || 0);
+    const countTen = (state.vault.ten.original || 0) + (state.vault.ten.borrowed || 0);
+    const countHundred = (state.vault.hundred.original || 0) + (state.vault.hundred.borrowed || 0);
+
+    const isCarriedTen = state.stageCarried && state.stageCarried.ten > 0;
+    const isCarriedHundred = state.stageCarried && state.stageCarried.hundred > 0;
+    const isCarriedThousand = state.stageCarried && state.stageCarried.thousand > 0;
+
+    if (DOM.btnCarryOne && DOM.btnRestoreCarryOne) {
+      if (isCarriedTen) {
+        DOM.btnCarryOne.style.display = 'none';
+        DOM.btnRestoreCarryOne.style.display = '';
+      } else {
+        DOM.btnCarryOne.style.display = '';
+        DOM.btnRestoreCarryOne.style.display = 'none';
+        DOM.btnCarryOne.disabled = (countOne < 10);
+      }
+    }
+
+    if (DOM.btnCarryTen && DOM.btnRestoreCarryTen) {
+      if (isCarriedHundred) {
+        DOM.btnCarryTen.style.display = 'none';
+        DOM.btnRestoreCarryTen.style.display = '';
+      } else {
+        DOM.btnCarryTen.style.display = '';
+        DOM.btnRestoreCarryTen.style.display = 'none';
+        DOM.btnCarryTen.disabled = (countTen < 10);
+      }
+    }
+
+    if (DOM.btnCarryHundred && DOM.btnRestoreCarryHundred) {
+      if (state.digits === 3) {
+        DOM.btnCarryHundred.style.display = 'none';
+        DOM.btnRestoreCarryHundred.style.display = 'none';
+      } else {
+        if (isCarriedThousand) {
+          DOM.btnCarryHundred.style.display = 'none';
+          DOM.btnRestoreCarryHundred.style.display = '';
+        } else {
+          DOM.btnCarryHundred.style.display = '';
+          DOM.btnRestoreCarryHundred.style.display = 'none';
+          DOM.btnCarryHundred.disabled = (countHundred < 10);
+        }
+      }
+    }
+  }
+}
+
+/* =========================================================
+   貨幣點擊互動 (扣錢 / 退位 / 加錢 / 進位)
+   ========================================================= */
+function handleMoneyClick(place, moneyElement, isBorrowed, isCarried) {
+  if (state.operation === 'sub') {
+    if (state.deductMode) {
+      deductItemWithAnimation(place, isBorrowed, moneyElement);
+      return;
+    }
+
+    if (place === 'thousand' && canDecompose('thousand')) {
+      triggerDecomposeAnimationFromEl(moneyElement, 'thousand', 'hundred', () => decompose('thousand'));
+    } else if (place === 'hundred' && canDecompose('hundred')) {
+      triggerDecomposeAnimationFromEl(moneyElement, 'hundred', 'ten', () => decompose('hundred'));
+    } else if (place === 'ten' && canDecompose('ten')) {
+      triggerDecomposeAnimationFromEl(moneyElement, 'ten', 'one', () => decompose('ten'));
+    } else if (place === 'one') {
+      playSubtleTapSound();
+    }
+  } else if (state.operation === 'add') {
+    if (state.deductMode) {
+      if (state.addedItems && state.addedItems.some(it => it.place === place)) {
+        returnItemWithAnimation(place, moneyElement);
+        return;
+      }
+      playSubtleTapSound();
+      return;
+    }
+
+    if (place === 'one' && canCarryConvertStage('one')) {
+      triggerCarryAnimationFromEl(moneyElement, 'one', 'ten', () => carryConvertStage('one', 'ten'));
+    } else if (place === 'ten' && canCarryConvertStage('ten')) {
+      triggerCarryAnimationFromEl(moneyElement, 'ten', 'hundred', () => carryConvertStage('ten', 'hundred'));
+    } else if (place === 'hundred' && canCarryConvertStage('hundred')) {
+      triggerCarryAnimationFromEl(moneyElement, 'hundred', 'thousand', () => carryConvertStage('hundred', 'thousand'));
+    } else {
+      playSubtleTapSound();
+    }
+  }
+}
+
+/* =========================================================
+   金庫動態飛行動畫
+   ========================================================= */
+function triggerDecomposeAnimation(fromPlace, toPlace, callback) {
+  const fromVault = getVaultElement(fromPlace);
+  let sourceItem = fromVault.querySelector('.ten-group-box .cash-bill-100, .ten-group-box .cash-coin-10, .borrowed-sub-group .cash-bill-100, .borrowed-sub-group .cash-coin-10');
+  if (!sourceItem) {
+    sourceItem = fromVault.querySelector('.cash-bill-1000, .cash-bill-100, .cash-coin-10');
+  }
+
+  if (sourceItem) {
+    triggerDecomposeAnimationFromEl(sourceItem, fromPlace, toPlace, callback);
+  } else {
+    callback();
+  }
+}
+
+function triggerDecomposeAnimationFromEl(sourceEl, fromPlace, toPlace, callback) {
+  const toVault = getVaultElement(toPlace);
+  if (!toVault) {
+    callback();
+    return;
+  }
+
+  const fromRect = sourceEl.getBoundingClientRect();
+  const toRect = toVault.getBoundingClientRect();
+
+  const ghost = sourceEl.cloneNode(true);
+  ghost.classList.add('flying-ghost-currency');
+  ghost.style.left = fromRect.left + 'px';
+  ghost.style.top = fromRect.top + 'px';
+  ghost.style.width = fromRect.width + 'px';
+  ghost.style.height = fromRect.height + 'px';
+  document.body.appendChild(ghost);
+
+  sourceEl.style.opacity = '0';
+
+  let animFired = false;
+  const runAnim = () => {
+    if (animFired) return;
+    animFired = true;
+
+    const deltaX = (toRect.left + toRect.width / 2) - (fromRect.left + fromRect.width / 2);
+    const deltaY = (toRect.top + 70) - (fromRect.top + fromRect.height / 2);
+
+    ghost.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.08)`;
+
+    setTimeout(() => {
+      ghost.classList.add('puff-burst');
+      playCoinSound();
+      callback();
+
+      setTimeout(() => {
+        ghost.remove();
+      }, 260);
+    }, 420);
+  };
+
+  requestAnimationFrame(runAnim);
+  setTimeout(runAnim, 30);
+}
+
+function triggerCarryAnimationFromEl(sourceEl, fromPlace, toPlace, callback) {
+  const toVault = getVaultElement(toPlace);
+  if (!toVault) {
+    callback();
+    return;
+  }
+
+  const fromRect = sourceEl.getBoundingClientRect();
+  const toRect = toVault.getBoundingClientRect();
+
+  const ghost = sourceEl.cloneNode(true);
+  ghost.classList.add('flying-ghost-currency');
+  ghost.style.left = fromRect.left + 'px';
+  ghost.style.top = fromRect.top + 'px';
+  ghost.style.width = fromRect.width + 'px';
+  ghost.style.height = fromRect.height + 'px';
+  document.body.appendChild(ghost);
+
+  sourceEl.style.opacity = '0';
+
+  let animFired = false;
+  const runAnim = () => {
+    if (animFired) return;
+    animFired = true;
+
+    const deltaX = (toRect.left + toRect.width / 2) - (fromRect.left + fromRect.width / 2);
+    const deltaY = (toRect.top + 70) - (fromRect.top + fromRect.height / 2);
+
+    ghost.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1.1)`;
+
+    setTimeout(() => {
+      ghost.classList.add('puff-burst');
+      playCoinSound();
+      callback();
+
+      setTimeout(() => {
+        ghost.remove();
+      }, 380);
+    }, 380);
+  };
+
+  requestAnimationFrame(runAnim);
+  setTimeout(runAnim, 30);
+}
+
+function deductItemWithAnimation(place, isBorrowed, moneyElement) {
+  const targetVault = DOM['deductVault' + capitalize(place)] || DOM.deductionDropZone;
+  if (!moneyElement || !targetVault) {
+    deductItem(place, isBorrowed);
+    return;
+  }
+
+  try {
+    const fromRect = moneyElement.getBoundingClientRect();
+    const toRect = targetVault.getBoundingClientRect();
+
+    const ghost = moneyElement.cloneNode(true);
+    ghost.classList.add('flying-ghost-currency');
+    ghost.style.left = fromRect.left + 'px';
+    ghost.style.top = fromRect.top + 'px';
+    ghost.style.width = fromRect.width + 'px';
+    ghost.style.height = fromRect.height + 'px';
+    document.body.appendChild(ghost);
+
+    deductItem(place, isBorrowed);
+
+    requestAnimationFrame(() => {
+      const deltaX = (toRect.left + 24) - fromRect.left;
+      const deltaY = (toRect.top + 16) - fromRect.top;
+
+      ghost.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.92)`;
+      ghost.style.opacity = '0.6';
+
+      setTimeout(() => {
+        ghost.remove();
+      }, 260);
+    });
+  } catch (err) {
+    deductItem(place, isBorrowed);
+  }
+}
+
+function addItemWithAnimation(item, moneyElement) {
+  const targetVault = getVaultElement(item.place);
+  if (!moneyElement || !targetVault) {
+    addItemToStage(item.id);
+    return;
+  }
+  try {
+    const fromRect = moneyElement.getBoundingClientRect();
+    const toRect = targetVault.getBoundingClientRect();
+
+    const ghost = moneyElement.cloneNode(true);
+    ghost.classList.add('flying-ghost-currency');
+    ghost.style.left = fromRect.left + 'px';
+    ghost.style.top = fromRect.top + 'px';
+    ghost.style.width = fromRect.width + 'px';
+    ghost.style.height = fromRect.height + 'px';
+    document.body.appendChild(ghost);
+
+    addItemToStage(item.id);
+
+    requestAnimationFrame(() => {
+      const deltaX = (toRect.left + 30) - fromRect.left;
+      const deltaY = (toRect.top + 30) - fromRect.top;
+
+      ghost.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.95)`;
+      ghost.style.opacity = '0.7';
+
+      setTimeout(() => {
+        ghost.remove();
+      }, 260);
+    });
+  } catch (err) {
+    addItemToStage(item.id);
+  }
+}
+
+function returnItemWithAnimation(place, moneyElement) {
+  const targetVault = DOM['deductVault' + capitalize(place)] || DOM.deductionDropZone;
+  if (!moneyElement || !targetVault) {
+    returnItemFromStage(place);
+    return;
+  }
+  try {
+    const fromRect = moneyElement.getBoundingClientRect();
+    const toRect = targetVault.getBoundingClientRect();
+
+    const ghost = moneyElement.cloneNode(true);
+    ghost.classList.add('flying-ghost-currency');
+    ghost.style.left = fromRect.left + 'px';
+    ghost.style.top = fromRect.top + 'px';
+    ghost.style.width = fromRect.width + 'px';
+    ghost.style.height = fromRect.height + 'px';
+    document.body.appendChild(ghost);
+
+    returnItemFromStage(place);
+
+    requestAnimationFrame(() => {
+      const deltaX = (toRect.left + 24) - fromRect.left;
+      const deltaY = (toRect.top + 16) - fromRect.top;
+
+      ghost.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.92)`;
+      ghost.style.opacity = '0.6';
+
+      setTimeout(() => {
+        ghost.remove();
+      }, 260);
+    });
+  } catch (err) {
+    returnItemFromStage(place);
+  }
+}
+
+
+/* --- js/stage_actions.js --- */
+/**
+ * 換錢與退位教學互動網站 - 扣錢加錢專區與舞台進退位換算連動模組 (Stage Actions Module)
+ */
+
+/* =========================================================
+   扣錢/加錢專區事件綁定與拖放邏輯
+   ========================================================= */
+function bindDeductionZone() {
+  if (!DOM.deductionDropZone) return;
+
+  // 拖入扣錢/加錢區
+  DOM.deductionDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    DOM.deductionDropZone.classList.add('drag-over');
+  });
+
+  DOM.deductionDropZone.addEventListener('dragleave', (e) => {
+    if (e.relatedTarget && DOM.deductionDropZone.contains(e.relatedTarget)) return;
+    DOM.deductionDropZone.classList.remove('drag-over');
+  });
+
+  DOM.deductionDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    DOM.deductionDropZone.classList.remove('drag-over');
+    try {
+      const dataStr = e.dataTransfer.getData('application/json');
+      if (!dataStr) return;
+      const data = JSON.parse(dataStr);
+      if (data && data.source === 'vault') {
+        if (state.operation === 'sub') {
+          deductItem(data.place, data.isBorrowed);
+        } else if (state.operation === 'add') {
+          returnItemFromStage(data.place);
+        }
+      }
+    } catch (err) {}
+  });
+
+  // 個別位值欄位也支援 dragover 視覺反饋
+  const colElements = [DOM.deductColThousand, DOM.deductColHundred, DOM.deductColTen, DOM.deductColOne];
+  colElements.forEach(col => {
+    if (!col) return;
+    col.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      col.classList.add('drag-over');
+    });
+    col.addEventListener('dragleave', (e) => {
+      if (e.relatedTarget && col.contains(e.relatedTarget)) return;
+      col.classList.remove('drag-over');
+    });
+    col.addEventListener('drop', (e) => {
+      col.classList.remove('drag-over');
+    });
+  });
+
+  // 拖入上方舞台 (減法時還原扣款，加法時加入錢幣)
+  if (DOM.moneyColumnsContainer) {
+    DOM.moneyColumnsContainer.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+    });
+
+    DOM.moneyColumnsContainer.addEventListener('drop', (e) => {
+      e.preventDefault();
+      try {
+        const dataStr = e.dataTransfer.getData('application/json');
+        if (!dataStr) return;
+        const data = JSON.parse(dataStr);
+        if (data && data.source === 'deduction') {
+          restoreDeductedItem(data.id);
+        } else if (data && data.source === 'addition') {
+          addItemToStage(data.id);
+        }
+      } catch (err) {}
+    });
+  }
+
+  // 全部還原按鈕 (減法：還原回台上；加法：返回台下加錢區)
+  if (DOM.btnRestoreAllDeducted) {
+    DOM.btnRestoreAllDeducted.addEventListener('click', () => {
+      if (state.operation === 'sub') {
+        if (state.deductedItems.length === 0) return;
+        state.deductedItems.forEach(item => {
+          if (item.isBorrowed) {
+            state.vault[item.place].borrowed += 1;
+          } else {
+            state.vault[item.place].original += 1;
+          }
+        });
+        state.deductedItems = [];
+        playRestoreSound();
+        syncAll();
+      } else if (state.operation === 'add') {
+        if (state.addedItems.length === 0) return;
+        // 若有進位先還原進位
+        ['one', 'ten', 'hundred'].forEach(p => {
+          const toP = p === 'one' ? 'ten' : (p === 'ten' ? 'hundred' : 'thousand');
+          if (state.stageCarried && state.stageCarried[toP] > 0) {
+            restoreCarryStage(p, toP);
+          }
+        });
+        state.addedItems.forEach(item => {
+          state.additionItems.push(item);
+          if (state.vault[item.place].original > 0) {
+            state.vault[item.place].original -= 1;
+          }
+        });
+        state.addedItems = [];
+        playRestoreSound();
+        syncAll();
+      }
+    });
+  }
+
+  // 綁定舞台加法進位按鈕事件
+  bindStageCarryActions();
+}
+
+function bindStageCarryActions() {
+  if (DOM.btnCarryOne) {
+    DOM.btnCarryOne.onclick = () => carryConvertStage('one', 'ten');
+  }
+  if (DOM.btnRestoreCarryOne) {
+    DOM.btnRestoreCarryOne.onclick = () => restoreCarryStage('one', 'ten');
+  }
+
+  if (DOM.btnCarryTen) {
+    DOM.btnCarryTen.onclick = () => carryConvertStage('ten', 'hundred');
+  }
+  if (DOM.btnRestoreCarryTen) {
+    DOM.btnRestoreCarryTen.onclick = () => restoreCarryStage('ten', 'hundred');
+  }
+
+  if (DOM.btnCarryHundred) {
+    DOM.btnCarryHundred.onclick = () => carryConvertStage('hundred', 'thousand');
+  }
+  if (DOM.btnRestoreCarryHundred) {
+    DOM.btnRestoreCarryHundred.onclick = () => restoreCarryStage('hundred', 'thousand');
+  }
+}
+
+/* =========================================================
+   減法扣錢專區操作
+   ========================================================= */
+function deductItem(place, isBorrowed) {
+  if (isBorrowed && state.vault[place].borrowed > 0) {
+    state.vault[place].borrowed -= 1;
+  } else if (!isBorrowed && state.vault[place].original > 0) {
+    state.vault[place].original -= 1;
+  } else if (state.vault[place].borrowed > 0) {
+    state.vault[place].borrowed -= 1;
+  } else if (state.vault[place].original > 0) {
+    state.vault[place].original -= 1;
+  } else {
+    return;
+  }
+
+  state.deductedItems.push({
+    id: 'deduct_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+    place: place,
+    isBorrowed: isBorrowed,
+    nominalVal: PLACE_VALUES[place]
+  });
+
+  playDeductSound();
+  syncAll();
+}
+
+function restoreDeductedItem(itemId) {
+  const idx = state.deductedItems.findIndex(item => item.id === itemId);
+  if (idx === -1) return;
+  const [removed] = state.deductedItems.splice(idx, 1);
+  if (removed.isBorrowed) {
+    state.vault[removed.place].borrowed += 1;
+  } else {
+    state.vault[removed.place].original += 1;
+  }
+  playCoinSound();
+  syncAll();
+}
+
+/* =========================================================
+   加法加錢專區操作 (將錢移至舞台 / 返回台下)
+   ========================================================= */
+function addItemToStage(itemId) {
+  const idx = state.additionItems.findIndex(it => it.id === itemId);
+  if (idx === -1) return;
+  const [item] = state.additionItems.splice(idx, 1);
+  state.addedItems.push(item);
+  state.vault[item.place].original += 1;
+
+  playCoinSound();
+  syncAll();
+}
+
+function returnItemFromStage(place) {
+  let itemIdx = -1;
+  for (let i = state.addedItems.length - 1; i >= 0; i--) {
+    if (state.addedItems[i].place === place) {
+      itemIdx = i;
+      break;
+    }
+  }
+  if (itemIdx === -1) return;
+
+  const [item] = state.addedItems.splice(itemIdx, 1);
+  state.additionItems.push(item);
+
+  if (state.vault[place].original > 0) {
+    state.vault[place].original -= 1;
+  } else if (state.vault[place].borrowed > 0) {
+    state.vault[place].borrowed -= 1;
+  } else if (state.vault[place].carried > 0) {
+    state.vault[place].carried -= 1;
+  }
+
+  playRestoreSound();
+  syncAll();
+}
+
+/* =========================================================
+   加法進位換算與還原功能 (Carry Convert & Restore)
+   ========================================================= */
+function canCarryConvertStage(fromPlace) {
+  if (state.operation !== 'add') return false;
+  const toPlace = (fromPlace === 'one' ? 'ten' : (fromPlace === 'ten' ? 'hundred' : (fromPlace === 'hundred' ? 'thousand' : null)));
+  if (!toPlace) return false;
+  const totalCount = (state.vault[fromPlace].original || 0) + (state.vault[fromPlace].borrowed || 0);
+  return totalCount >= 10 && (!state.stageCarried || state.stageCarried[toPlace] === 0);
+}
+
+function carryConvertStage(fromPlace, toPlace) {
+  if (state.operation !== 'add') return;
+  const totalCount = (state.vault[fromPlace].original || 0) + (state.vault[fromPlace].borrowed || 0);
+  if (totalCount < 10) return;
+
+  // 扣除 10 個貨幣
+  let remaining = 10;
+  if (state.vault[fromPlace].borrowed > 0) {
+    const deductBorrowed = Math.min(state.vault[fromPlace].borrowed, remaining);
+    state.vault[fromPlace].borrowed -= deductBorrowed;
+    remaining -= deductBorrowed;
+  }
+  if (remaining > 0 && state.vault[fromPlace].original > 0) {
+    state.vault[fromPlace].original -= remaining;
+  }
+
+  // 增加 1 個進位貨幣至 toPlace
+  state.vault[toPlace].carried = (state.vault[toPlace].carried || 0) + 1;
+  if (!state.stageCarried) state.stageCarried = { ten: 0, hundred: 0, thousand: 0 };
+  state.stageCarried[toPlace] = 1;
+
+  // 連動直式藍色進位標籤
+  state.carries[toPlace] = 1;
+
+  playCoinSound();
+  syncAll();
+}
+
+function restoreCarryStage(fromPlace, toPlace) {
+  if (state.operation !== 'add') return;
+  if (!state.stageCarried || state.stageCarried[toPlace] === 0) return;
+
+  // 扣除 1 個進位貨幣
+  if (state.vault[toPlace].carried > 0) {
+    state.vault[toPlace].carried -= 1;
+  } else if (state.vault[toPlace].original > 0) {
+    state.vault[toPlace].original -= 1;
+  }
+
+  // 還原 10 個貨幣回 fromPlace
+  state.vault[fromPlace].original += 10;
+  state.stageCarried[toPlace] = 0;
+
+  // 連動直式取消藍色進位標籤
+  state.carries[toPlace] = 0;
+
+  playRestoreSound();
+  syncAll();
+}
+
+/* =========================================================
+   扣錢專區 / 加錢專區 渲染
+   ========================================================= */
+function renderDeductionZone() {
+  if (DOM.deductVaultThousand) DOM.deductVaultThousand.innerHTML = '';
+  if (DOM.deductVaultHundred)  DOM.deductVaultHundred.innerHTML = '';
+  if (DOM.deductVaultTen)      DOM.deductVaultTen.innerHTML = '';
+  if (DOM.deductVaultOne)      DOM.deductVaultOne.innerHTML = '';
+
+  const counts = {
+    thousand: 0,
+    hundred: 0,
+    ten: 0,
+    one: 0
+  };
+
+  if (state.operation === 'sub') {
+    // 減法模式：扣錢區
+    if (DOM.deductionZoneWrapper) DOM.deductionZoneWrapper.classList.remove('addition-mode');
+    if (DOM.deductionIcon) DOM.deductionIcon.textContent = '✂️';
+    if (DOM.deductionHeading) DOM.deductionHeading.textContent = '扣錢區';
+    if (DOM.deductionSubtext) DOM.deductionSubtext.textContent = '（拖拉上方錢幣至此扣除，系統會自動歸入對應位值；點擊已扣除錢幣可放回台上）';
+    if (DOM.deductModeToggleText) DOM.deductModeToggleText.textContent = '點擊直接扣錢';
+    if (DOM.lblDeductMode) DOM.lblDeductMode.title = '勾選後，直接點擊互動台的錢即可移動至扣錢區；未勾選則可用拖拉方式';
+    if (DOM.btnRestoreAllDeducted) {
+      DOM.btnRestoreAllDeducted.innerHTML = '<span>↺</span> 全部還原回台上';
+      DOM.btnRestoreAllDeducted.title = '將扣錢區的所有錢幣還原回台上';
+    }
+
+    const targetDeduct = computeValue(state.num2);
+    if (DOM.targetDeductPill) {
+      DOM.targetDeductPill.innerHTML = `應扣除：<strong id="targetDeductVal">${targetDeduct}</strong> 元`;
+      DOM.targetDeductPill.style.display = 'inline-flex';
+    }
+
+    let totalDeducted = 0;
+    state.deductedItems.forEach(item => {
+      totalDeducted += item.nominalVal;
+      if (counts[item.place] !== undefined) counts[item.place]++;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'deducted-item-wrapper';
+      wrapper.title = '點擊放回台上，或拖回上方舞台';
+      wrapper.setAttribute('draggable', 'true');
+
+      let el;
+      switch (item.place) {
+        case 'thousand': el = createPure1000Bill(); break;
+        case 'hundred':  el = createPure100Bill(); break;
+        case 'ten':      el = createPure10Coin(); break;
+        case 'one':      el = createPure1Coin(); break;
+      }
+      wrapper.appendChild(el);
+
+      wrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        restoreDeductedItem(item.id);
+      });
+
+      wrapper.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('application/json', JSON.stringify({
+          source: 'deduction',
+          id: item.id,
+          place: item.place
+        }));
+        e.dataTransfer.effectAllowed = 'move';
+        wrapper.classList.add('dragging-currency');
+      });
+
+      wrapper.addEventListener('dragend', () => {
+        wrapper.classList.remove('dragging-currency');
+      });
+
+      const targetVault = DOM['deductVault' + capitalize(item.place)];
+      if (targetVault) targetVault.appendChild(wrapper);
+    });
+
+    if (DOM.deductedTotalPill) {
+      DOM.deductedTotalPill.innerHTML = `已扣除：<strong id="deductedTotalVal">${totalDeducted}</strong> 元`;
+      DOM.deductedTotalPill.classList.toggle('matched', totalDeducted === targetDeduct && targetDeduct > 0);
+    }
+  } else {
+    // 加法模式：加錢區
+    if (DOM.deductionZoneWrapper) DOM.deductionZoneWrapper.classList.add('addition-mode');
+    if (DOM.deductionIcon) DOM.deductionIcon.textContent = '➕';
+    if (DOM.deductionHeading) DOM.deductionHeading.textContent = '加錢區';
+    if (DOM.deductionSubtext) DOM.deductionSubtext.textContent = '（將加數的錢幣加入上方互動台；啟用加錢後可點擊移動，亦可使用拖拉）';
+    if (DOM.deductModeToggleText) DOM.deductModeToggleText.textContent = '點擊加錢';
+    if (DOM.lblDeductMode) DOM.lblDeductMode.title = '啟用加錢後，直接點擊加錢區的錢即可移動至互動台；未啟用則可用拖拉方式';
+    if (DOM.btnRestoreAllDeducted) {
+      DOM.btnRestoreAllDeducted.innerHTML = '<span>↺</span> 全部還原 (返回台下)';
+      DOM.btnRestoreAllDeducted.title = '將所有已加至台上的錢幣還原回加錢區';
+    }
+
+    const targetAdd = computeValue(state.num2);
+    if (DOM.targetDeductPill) {
+      DOM.targetDeductPill.innerHTML = `應加上：<strong id="targetDeductVal">${targetAdd}</strong> 元`;
+      DOM.targetDeductPill.style.display = 'inline-flex';
+    }
+
+    (state.additionItems || []).forEach(item => {
+      if (counts[item.place] !== undefined) counts[item.place]++;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'deducted-item-wrapper addition-item-wrapper';
+      wrapper.title = state.deductMode ? '點擊直接加到上方互動台' : '拖曳至上方互動台加錢';
+      wrapper.setAttribute('draggable', 'true');
+
+      let el;
+      switch (item.place) {
+        case 'thousand': el = createPure1000Bill(); break;
+        case 'hundred':  el = createPure100Bill(); break;
+        case 'ten':      el = createPure10Coin(); break;
+        case 'one':      el = createPure1Coin(); break;
+      }
+      wrapper.appendChild(el);
+
+      wrapper.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (state.deductMode) {
+          addItemWithAnimation(item, wrapper);
+        } else {
+          playSubtleTapSound();
+        }
+      });
+
+      wrapper.addEventListener('dragstart', (e) => {
+        e.dataTransfer.setData('application/json', JSON.stringify({
+          source: 'addition',
+          id: item.id,
+          place: item.place
+        }));
+        e.dataTransfer.effectAllowed = 'move';
+        wrapper.classList.add('dragging-currency');
+      });
+
+      wrapper.addEventListener('dragend', () => {
+        wrapper.classList.remove('dragging-currency');
+      });
+
+      const targetVault = DOM['deductVault' + capitalize(item.place)];
+      if (targetVault) targetVault.appendChild(wrapper);
+    });
+
+    const totalAdded = (state.addedItems || []).reduce((acc, it) => acc + it.nominalVal, 0);
+    if (DOM.deductedTotalPill) {
+      DOM.deductedTotalPill.innerHTML = `已加：<strong id="deductedTotalVal">${totalAdded}</strong> 元`;
+      DOM.deductedTotalPill.classList.toggle('matched', totalAdded === targetAdd && targetAdd > 0);
+    }
+  }
+
+  // 更新各個位值標籤數量
+  if (DOM.deductBadgeThousand) {
+    DOM.deductBadgeThousand.textContent = `${counts.thousand} 張 1000`;
+    DOM.deductBadgeThousand.classList.toggle('has-items', counts.thousand > 0);
+  }
+  if (DOM.deductBadgeHundred) {
+    DOM.deductBadgeHundred.textContent = `${counts.hundred} 張 100`;
+    DOM.deductBadgeHundred.classList.toggle('has-items', counts.hundred > 0);
+  }
+  if (DOM.deductBadgeTen) {
+    DOM.deductBadgeTen.textContent = `${counts.ten} 個 10`;
+    DOM.deductBadgeTen.classList.toggle('has-items', counts.ten > 0);
+  }
+  if (DOM.deductBadgeOne) {
+    DOM.deductBadgeOne.textContent = `${counts.one} 個 1`;
+    DOM.deductBadgeOne.classList.toggle('has-items', counts.one > 0);
+  }
+}
+
+
+/* --- js/stage.js --- */
+/**
+ * 換錢與退位教學互動網站 - 錢幣互動舞台與扣錢/加錢整合入口 (Stage Module)
+ * 子模組拆分：
+ * - js/stage_coins.js: 錢幣生成、幣值統計、金庫欄位渲染與飛行動畫
+ * - js/stage_actions.js: 扣錢區與加錢區操作、加法進位換算與還原、拖放事件綁定
+ */
+
+function renderMoneyStage() {
+  renderMoneyVaults();
+  renderDeductionZone();
+}
+
+function initStage() {
+  bindDeductionZone();
+}
+
+
+/* --- app.js --- */
+/**
+ * 換錢與退位教學互動網站 - 主程式協調入口 (Coordinator & Lifecycle)
+ * 負責全域初始化、控制列事件綁定、檢查答案綜合判定與跨模組渲染同步
+ */
+
+/* =========================================================
+   應用程式生命週期初始化
+   ========================================================= */
+function init() {
+  cacheDOM();
+  bindControls();
+  bindScoreboard();
+  bindAvatarModal();
+  bindNumberPicker();
+  bindBoardClicks();
+  bindDecomposeActions();
+  bindDeductionZone();
+  bindCheckAnswer();
+  updateStageVisibility();
+  resetDecompositions();
+  renderScoreboard();
+  syncAll();
+}
+
+/* =========================================================
+   頂部與全局控制項綁定
+   ========================================================= */
+function bindControls() {
+  // 橫式算式答案方框：點擊翻開或隱藏答案
+  if (DOM.hEqRes) {
+    DOM.hEqRes.addEventListener('click', () => {
+      state.hEqRevealed = !state.hEqRevealed;
+      playCoinSound();
+      renderHorizontalEquation();
+    });
+  }
+
+  // 點擊直接扣錢模式切換開關
+  if (DOM.chkDeductMode) {
+    DOM.chkDeductMode.addEventListener('change', () => {
+      state.deductMode = DOM.chkDeductMode.checked;
+      if (DOM.moneyColumnsContainer) {
+        DOM.moneyColumnsContainer.classList.toggle('deduct-mode-active', state.deductMode);
+      }
+      playSubtleTapSound();
+      renderMoneyVaults();
+    });
+  }
+
+  // 互動台顯示/隱藏切換開關
+  if (DOM.chkStageSwitch) {
+    DOM.chkStageSwitch.addEventListener('change', () => {
+      state.stageVisible = DOM.chkStageSwitch.checked;
+      updateStageVisibility();
+      playCoinSound();
+    });
+  }
+
+  // 加減法切換
+  DOM.opControl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.seg-btn');
+    if (!btn) return;
+    DOM.opControl.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.operation = btn.dataset.op;
+    DOM.gridOpSign.textContent = state.operation === 'sub' ? '−' : '＋';
+    DOM.hEqOp.textContent = state.operation === 'sub' ? '−' : '＋';
+    generateRandomProblem();
+  });
+
+  // 更新位數控制按鈕狀態 (進階題勾選時禁用三位數)
+  function updateDigitControlState() {
+    if (!DOM.digitControl) return;
+    const btn3 = DOM.digitControl.querySelector('[data-digits="3"]');
+    if (!btn3) return;
+    if (state.advancedMode) {
+      btn3.disabled = true;
+      btn3.classList.add('disabled');
+      btn3.title = '進階題僅支援四位數題型';
+    } else {
+      btn3.disabled = false;
+      btn3.classList.remove('disabled');
+      btn3.title = '';
+    }
+  }
+
+  // 位數切換 (四位數 / 三位數)
+  DOM.digitControl.addEventListener('click', (e) => {
+    const btn = e.target.closest('.seg-btn');
+    if (!btn || btn.disabled || btn.classList.contains('disabled')) return;
+    const targetDigits = parseInt(btn.dataset.digits, 10);
+    // 當進階題被勾選時，無法切換三位數的題目
+    if (state.advancedMode && targetDigits === 3) {
+      playSubtleTapSound();
+      return;
+    }
+    if (state.digits === targetDigits) return;
+
+    DOM.digitControl.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.digits = targetDigits;
+    applyDigitsVisibility();
+    generateRandomProblem(); // 切換位數時更換題目
+  });
+
+  // 進階題開關監聽
+  DOM.chkAdvancedMode.addEventListener('change', () => {
+    state.advancedMode = DOM.chkAdvancedMode.checked;
+    updateDigitControlState();
+    if (state.advancedMode && state.digits !== 4) {
+      state.digits = 4;
+      DOM.digitControl.querySelectorAll('.seg-btn').forEach(b => {
+        if (b.dataset.digits === '4') b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      applyDigitsVisibility();
+    }
+    generateRandomProblem();
+  });
+
+  // 換題 (隨機題目)
+  DOM.btnRandom.addEventListener('click', generateRandomProblem);
+
+  // 重設題目
+  DOM.btnReset.addEventListener('click', () => {
+    resetDecompositions();
+    syncAll();
+  });
+
+  // 清除退位 / 清空金庫重設
+  DOM.btnClearBorrow.addEventListener('click', () => {
+    resetDecompositions();
+    syncAll();
+    playRestoreSound();
+  });
+
+  DOM.btnResetVault.addEventListener('click', () => {
+    resetDecompositions();
+    syncAll();
+    playRestoreSound();
+  });
+}
+
+/* =========================================================
+   舞台與欄位可見度控制
+   ========================================================= */
+function updateStageVisibility() {
+  if (DOM.chkStageSwitch) {
+    DOM.chkStageSwitch.checked = state.stageVisible;
+  }
+  if (DOM.moneyStageCard) {
+    if (state.stageVisible) {
+      DOM.moneyStageCard.classList.remove('stage-hidden');
+    } else {
+      DOM.moneyStageCard.classList.add('stage-hidden');
+    }
+  }
+  if (DOM.stageSwitchLabel) {
+    DOM.stageSwitchLabel.textContent = state.stageVisible ? '互動台：已開啟' : '互動台：已關閉';
+  }
+}
+
+function applyDigitsVisibility() {
+  const is3Digits = state.digits === 3;
+  const thousandElements = document.querySelectorAll('.col-thousand');
+  thousandElements.forEach(el => {
+    el.style.display = is3Digits ? 'none' : '';
+  });
+
+  if (is3Digits) {
+    DOM.moneyColumnsContainer.classList.add('digits-3');
+    DOM.boardGridTable.classList.add('digits-3');
+    if (DOM.deductionPlacesGrid) DOM.deductionPlacesGrid.classList.add('digits-3');
+    state.num1.thousand = 0;
+    state.num2.thousand = 0;
+  } else {
+    DOM.moneyColumnsContainer.classList.remove('digits-3');
+    DOM.boardGridTable.classList.remove('digits-3');
+    if (DOM.deductionPlacesGrid) DOM.deductionPlacesGrid.classList.remove('digits-3');
+  }
+}
+
+/* =========================================================
+   檢查答案綜合判定與計分反饋
+   ========================================================= */
+function handleCheckAnswer() {
+  const val1 = computeValue(state.num1);
+  const val2 = computeValue(state.num2);
+  const expectedResult = state.operation === 'sub' ? Math.max(0, val1 - val2) : (val1 + val2);
+  const expStr = String(expectedResult).padStart(4, '0');
+  const vaultTotal = computeVaultTotal();
+
+  const ans = state.userAnswers;
+  const is3Digits = (state.digits === 3);
+
+  let userThousand = ans.thousand !== null ? ans.thousand : 0;
+  let userHundred = ans.hundred !== null ? ans.hundred : 0;
+  let userTen = ans.ten !== null ? ans.ten : 0;
+  let userOne = ans.one !== null ? ans.one : 0;
+
+  const hasFilledAny = (ans.one !== null || ans.ten !== null || ans.hundred !== null || (state.digits === 4 && ans.thousand !== null));
+  const userTotal = (userThousand * 1000) + (userHundred * 100) + (userTen * 10) + userOne;
+
+  // 答案判定：直式答案填寫正確，或錢幣總值正確
+  const isBoxCorrect = (userTotal === expectedResult && (ans.one !== null && ans.ten !== null && ans.hundred !== null));
+  const isVaultCorrect = (vaultTotal === expectedResult);
+
+  const isCorrect = isBoxCorrect || isVaultCorrect;
+
+  if (isCorrect) {
+    // 答對了！揭曉橫式答案
+    state.hEqRevealed = true;
+    renderHorizontalEquation();
+
+    state.answerBoxesVerified = true;
+    // 若直式方框尚未填寫，自動填入正確答案
+    if (ans.one === null) state.userAnswers.one = parseInt(expStr[3], 10);
+    if (ans.ten === null) state.userAnswers.ten = parseInt(expStr[2], 10);
+    if (ans.hundred === null) state.userAnswers.hundred = parseInt(expStr[1], 10);
+    if (!is3Digits && ans.thousand === null) state.userAnswers.thousand = parseInt(expStr[0], 10);
+    renderBoard();
+
+    // 計分板加分邏輯：該玩家回答正確可加1分
+    const activePlayer = state.players[state.activePlayerIndex];
+    let scoreMessage = '';
+
+    if (!state.problemAwarded) {
+      state.problemAwarded = true;
+      activePlayer.score += 1;
+      renderScoreboard(activePlayer.id);
+      scoreMessage = `<br><span class="score-award-notice">⭐ 恭喜 <strong>【${activePlayer.avatar} ${activePlayer.name}】</strong> 回答正確，獲得 <strong>+1 分</strong>！（目前得分：${activePlayer.score} 分）</span>`;
+    } else {
+      scoreMessage = `<br><span class="score-award-notice already">⭐ 目前作答玩家為 <strong>【${activePlayer.avatar} ${activePlayer.name}】</strong>（本題已計過分囉，目前總分：${activePlayer.score} 分）</span>`;
+    }
+
+    playSuccessSound();
+    DOM.answerIcon.textContent = '🎉';
+    DOM.answerTitle.textContent = '答對了！太棒了！';
+    DOM.answerTitle.className = 'answer-title correct';
+    DOM.answerDesc.innerHTML = `直式答案 <strong>${expectedResult}</strong> 完全正確！<br>橫式算式答案也已揭曉！${scoreMessage}`;
+    DOM.answerCloseBtn.textContent = '完成！';
+  } else {
+    // 未答對
+    state.answerBoxesVerified = false;
+    renderBoard();
+
+    DOM.answerIcon.textContent = '💡';
+    DOM.answerTitle.textContent = '還沒完全答對喔！';
+    DOM.answerTitle.className = 'answer-title wrong';
+
+    let msg = '';
+    if (!hasFilledAny) {
+      msg = `請在直式下方的答案方框選擇數字填入你的答案喔！`;
+    } else {
+      msg = `你填寫的答案是 <strong>${userTotal}</strong>，和題目答案不太一樣喔！再仔細算算看！`;
+    }
+
+    DOM.answerDesc.innerHTML = msg;
+    DOM.answerCloseBtn.textContent = '我知道了，繼續練習';
+  }
+
+  DOM.answerModal.classList.add('open');
+}
+
+function bindCheckAnswer() {
+  if (DOM.btnCheckAnswer) {
+    DOM.btnCheckAnswer.addEventListener('click', handleCheckAnswer);
+  }
+  if (DOM.btnCheckAnswerSide) {
+    DOM.btnCheckAnswerSide.addEventListener('click', handleCheckAnswer);
+  }
+  if (DOM.btnCheckAnswerBottom) {
+    DOM.btnCheckAnswerBottom.addEventListener('click', handleCheckAnswer);
+  }
+
+  DOM.answerCloseBtn.addEventListener('click', () => {
+    DOM.answerModal.classList.remove('open');
+  });
+
+  DOM.answerModal.addEventListener('click', (e) => {
+    if (e.target === DOM.answerModal) {
+      DOM.answerModal.classList.remove('open');
+    }
+  });
+}
+
+/* =========================================================
+   跨模組渲染同步核心
+   ========================================================= */
+function syncAll() {
+  applyDigitsVisibility();
+  renderHorizontalEquation();
+  renderBoard();
+  renderMoneyVaults();
+  renderDeductionZone();
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+
+
+</script>
+</body>
+</html>
