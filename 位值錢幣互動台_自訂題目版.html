@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>位值錢幣互動台｜自訂題目版</title>
+<style>
+:root{
+  --bg:#f1f5f9;--card:#fff;--text:#1e293b;--muted:#64748b;--line:#e2e8f0;
+  --p:#4f46e5;--th:#8b5cf6;--hu:#2563eb;--te:#16a34a;--on:#dc2626;
+}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei",sans-serif;padding:18px;user-select:none}
+.app{max-width:1480px;margin:auto;display:grid;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 4px 14px #0f172a0d;padding:18px}
+h1{font-size:1.45rem;margin:0}.sub{color:var(--muted);font-size:.9rem;margin-top:4px}
+.problem-builder{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap}
+.num-display,.op-btn{height:64px;border:2px solid #cbd5e1;border-radius:14px;background:#fff;font-size:2rem;font-weight:900;min-width:180px;padding:0 18px;cursor:pointer}
+.num-display.active{border-color:var(--p);box-shadow:0 0 0 4px #e0e7ff}.op-btn{min-width:82px;color:var(--p)}
+.apply{height:52px;border:0;border-radius:13px;background:var(--p);color:white;font-size:1rem;font-weight:900;padding:0 24px;cursor:pointer}
+.equation{text-align:center;font-size:2.1rem;font-weight:900;margin-top:12px}.equation small{font-size:.9rem;color:var(--muted);display:block;margin-top:6px}
+.keyboard{display:none;max-width:460px;margin:14px auto 0;background:#eef2ff;border:1px solid #c7d2fe;border-radius:16px;padding:12px}
+.keyboard.show{display:block}.key-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.key{height:52px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-size:1.25rem;font-weight:900;cursor:pointer}
+.key.wide{grid-column:span 2}.key.done{background:#4f46e5;color:#fff}.key.del{background:#fff1f2;color:#be123c}
+.stage-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.stage-title{font-size:1.3rem;font-weight:900}.pill{padding:8px 14px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-weight:800}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:8px 13px;font-weight:800;cursor:pointer}.btn:hover{background:#f8fafc}
+.cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.col{border:1.5px solid var(--line);border-radius:14px;background:#f8fafc;overflow:hidden;min-height:320px;display:flex;flex-direction:column}
+.col-head{padding:10px 12px;background:#fff;border-bottom:1px solid var(--line);font-weight:900;display:flex;justify-content:space-between}.th .col-head{color:#6d28d9}.hu .col-head{color:#1d4ed8}.te .col-head{color:#15803d}.on .col-head{color:#b91c1c}
+.vault{padding:12px;display:flex;flex-wrap:wrap;align-content:flex-start;gap:8px;flex:1}
+.money{display:flex;align-items:center;justify-content:center;font-weight:900;cursor:grab;touch-action:none;box-shadow:0 2px 5px #0002}
+.bill1000{width:82px;height:40px;border:2px solid #7c3aed;background:#ede9fe;color:#5b21b6;border-radius:7px}.bill100{width:72px;height:36px;border:2px solid #2563eb;background:#dbeafe;color:#1e40af;border-radius:7px}
+.coin10{width:42px;height:42px;border:3px solid #16a34a;background:#dcfce7;color:#166534;border-radius:50%}.coin1{width:36px;height:36px;border:3px solid #dc2626;background:#fee2e2;color:#991b1b;border-radius:50%}
+.borrowed{outline:3px dashed #f59e0b;outline-offset:2px}.added{outline:3px dashed #3b82f6;outline-offset:2px}
+.col-foot{padding:10px;border-top:1px solid var(--line);display:flex;gap:6px;flex-wrap:wrap}.mini{font-size:.78rem;padding:7px 9px}
+.zone{margin-top:16px;border:2px dashed #f87171;background:#fff5f5;border-radius:14px;padding:14px}.zone.add-zone{border-color:#60a5fa;background:#eff6ff}
+.zone-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.zone-title{font-weight:900}.zone-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toggle{display:flex;gap:6px;align-items:center;font-weight:800}
+.zone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.zcol{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;min-height:86px}.zhead{font-size:.82rem;font-weight:900;border-bottom:1px solid var(--line);padding-bottom:5px}.zvault{display:flex;flex-wrap:wrap;gap:6px;padding-top:8px}
+.feedback{margin-top:12px;text-align:center;min-height:26px;font-weight:900}.ok{color:#059669}.warn{color:#dc2626}
+.note{font-size:.85rem;color:var(--muted);line-height:1.55}
+@media(max-width:900px){.cols,.zone-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){body{padding:8px}.card{padding:12px}.num-display{min-width:130px;font-size:1.55rem}.cols,.zone-grid{grid-template-columns:1fr 1fr}.col{min-height:250px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <section class="card">
+    <h1>🏦 位值錢幣互動台</h1>
+    <div class="sub">自訂題目版｜用觸控式鍵盤輸入數字，選擇＋或－。畫面不顯示計算答案。</div>
+    <div class="problem-builder">
+      <button class="num-display active" id="num1Btn">8430</button>
+      <button class="op-btn" id="opBtn">−</button>
+      <button class="num-display" id="num2Btn">1458</button>
+      <button class="apply" id="applyBtn">套用題目</button>
+    </div>
+    <div class="keyboard" id="keyboard">
+      <div class="key-grid">
+        <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button><button class="key" data-k="4">4</button><button class="key" data-k="5">5</button>
+        <button class="key" data-k="6">6</button><button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button><button class="key" data-k="0">0</button>
+        <button class="key wide del" data-k="del">⌫ 刪除</button><button class="key" data-k="clear">清空</button><button class="key wide done" data-k="done">完成</button>
+      </div>
+    </div>
+    <div class="equation" id="equation">8430 − 1458<small>只呈現題目，不輸出答案</small></div>
+  </section>
+
+  <section class="card">
+    <div class="stage-head">
+      <div class="stage-title">🏦 位值錢幣互動台</div>
+      <div class="actions">
+        <div class="pill">目前台上總值：<span id="stageTotal">8430</span> 元</div>
+        <button class="btn" id="checkBtn">✅ 檢查操作</button>
+        <button class="btn" id="resetBtn">↺ 還原錢幣</button>
+      </div>
+    </div>
+    <div class="cols" id="cols"></div>
+    <div id="workZone"></div>
+    <div class="feedback" id="feedback"></div>
+  </section>
+  <div class="note">操作邏輯保留：可逐位換錢／退位、還原、拖拉扣錢、點擊直接扣錢；加法時第二個數會放在待加入區，可逐枚加入，再進行十進位換算。重新套用題目會依第一個數重建互動台。</div>
+</div>
+
+<script>
+const PLACES=[
+ {k:'thousand',v:1000,n:'千位',unit:'張',cls:'th',money:'bill1000'},
+ {k:'hundred',v:100,n:'百位',unit:'張',cls:'hu',money:'bill100'},
+ {k:'ten',v:10,n:'十位',unit:'個',cls:'te',money:'coin10'},
+ {k:'one',v:1,n:'個位',unit:'個',cls:'on',money:'coin1'}
+];
+let state={a:8430,b:1458,op:'sub',vault:{},deducted:[],pending:[],added:[],deductMode:false};
+let editing='a', editBuffer='8430';
+
+const $=id=>document.getElementById(id);
+function digits(n){return {thousand:Math.floor(n/1000)%10,hundred:Math.floor(n/100)%10,ten:Math.floor(n/10)%10,one:n%10}}
+function resetState(){
+ const d=digits(state.a);
+ state.vault={thousand:{o:d.thousand,b:0,a:0},hundred:{o:d.hundred,b:0,a:0},ten:{o:d.ten,b:0,a:0},one:{o:d.one,b:0,a:0}};
+ state.deducted=[];state.added=[];state.pending=[];
+ if(state.op==='add'){
+   const x=digits(state.b);
+   PLACES.forEach(p=>{for(let i=0;i<x[p.k];i++)state.pending.push({id:crypto.randomUUID(),place:p.k,val:p.v})});
+ }
+ $('feedback').textContent=''; render();
+}
+function countVault(k){let q=state.vault[k];return q.o+q.b+q.a}
+function totalVault(){return PLACES.reduce((s,p)=>s+countVault(p.k)*p.v,0)}
+function moneyEl(p,extra=''){
+ const e=document.createElement('div');e.className=`money ${p.money} ${extra}`;e.textContent=p.v;
+ e.draggable=true;e.dataset.place=p.k;e.dataset.val=p.v;return e;
+}
+function render(){
+ $('equation').innerHTML=`${state.a} ${state.op==='sub'?'−':'＋'} ${state.b}<small>只呈現題目，不輸出答案</small>`;
+ $('stageTotal').textContent=totalVault();
+ const cols=$('cols');cols.innerHTML='';
+ PLACES.forEach((p,idx)=>{
+  const q=state.vault[p.k], c=countVault(p.k);
+  const col=document.createElement('div');col.className=`col ${p.cls}`;
+  col.innerHTML=`<div class="col-head"><span>${p.n} ($${p.v})</span><span>${c} ${p.unit} (${c*p.v}元)</span></div><div class="vault" id="v-${p.k}"></div><div class="col-foot" id="f-${p.k}"></div>`;
+  cols.appendChild(col);
+  const v=col.querySelector('.vault');
+  for(let i=0;i<q.o;i++)v.appendChild(bindMoney(moneyEl(p),'vault',p.k));
+  for(let i=0;i<q.b;i++)v.appendChild(bindMoney(moneyEl(p,'borrowed'),'vault',p.k));
+  for(let i=0;i<q.a;i++)v.appendChild(bindMoney(moneyEl(p,'added'),'vault',p.k));
+  const foot=col.querySelector('.col-foot');
+  if(idx<3){
+    const b=document.createElement('button');b.className='btn mini';b.textContent=`換 10 ${PLACES[idx+1].unit} ${PLACES[idx+1].v} 元 ➔`;
+    b.onclick=()=>decompose(idx);foot.appendChild(b);
+  }
+  if(idx>0){
+    const cbtn=document.createElement('button');cbtn.className='btn mini';cbtn.textContent=`換 1 ${p.unit} ${p.v} 元 ➔`;
+    cbtn.onclick=()=>carry(idx);foot.appendChild(cbtn);
+  }
+ });
+ renderZone();
+}
+function bindMoney(el,source,place){
+ el.addEventListener('dragstart',ev=>{ev.dataTransfer.setData('text/plain',JSON.stringify({source,place}));});
+ if(state.op==='sub')el.addEventListener('click',()=>{if(state.deductMode)moveVaultToDeduct(place)});
+ return el;
+}
+function takeOne(place){
+ const q=state.vault[place];
+ if(q.a>0){q.a--;return true} if(q.b>0){q.b--;return true} if(q.o>0){q.o--;return true} return false;
+}
+function addOne(place,type='b'){state.vault[place][type]++}
+function decompose(idx){
+ const from=PLACES[idx],to=PLACES[idx+1]; if(!takeOne(from.k)){flash('這一位沒有錢可以換。',false);return}
+ for(let i=0;i<10;i++)addOne(to.k,'b');render();
+}
+function carry(idx){
+ const from=PLACES[idx],to=PLACES[idx-1];
+ if(countVault(from.k)<10){flash(`需要 10 個 ${from.v} 才能換成 ${to.v}。`,false);return}
+ for(let i=0;i<10;i++)takeOne(from.k); addOne(to.k,'a');render();
+}
+function moveVaultToDeduct(place){
+ if(!takeOne(place)){return}
+ const p=PLACES.find(x=>x.k===place);state.deducted.push({id:crypto.randomUUID(),place,val:p.v});render();
+}
+function restoreDeduct(id){
+ const i=state.deducted.findIndex(x=>x.id===id);if(i<0)return;const it=state.deducted.splice(i,1)[0];addOne(it.place,'b');render();
+}
+function renderZone(){
+ const w=$('workZone');w.innerHTML='';
+ if(state.op==='sub'){
+  const z=document.createElement('div');z.className='zone';
+  const sum=state.deducted.reduce((s,x)=>s+x.val,0);
+  z.innerHTML=`<div class="zone-head"><div class="zone-title">✂️ 扣錢區 <span class="note">（拖拉上方錢幣至此；點擊已扣除錢幣可放回）</span></div>
+  <div class="zone-meta"><label class="toggle"><input id="deductToggle" type="checkbox" ${state.deductMode?'checked':''}> 點擊直接扣錢</label>
+  <span class="pill">應扣除：${state.b} 元</span><span class="pill">已扣除：${sum} 元</span><button class="btn" id="restoreDeduct">↺ 全部還原回台上</button></div></div><div class="zone-grid" id="zoneGrid"></div>`;
+  w.appendChild(z);$('deductToggle').onchange=e=>state.deductMode=e.target.checked;
+  $('restoreDeduct').onclick=()=>{[...state.deducted].forEach(x=>addOne(x.place,'b'));state.deducted=[];render()};
+  z.addEventListener('dragover',e=>e.preventDefault());z.addEventListener('drop',e=>{e.preventDefault();try{let d=JSON.parse(e.dataTransfer.getData('text/plain'));if(d.source==='vault')moveVaultToDeduct(d.place)}catch{}});
+  const g=$('zoneGrid');
+  PLACES.forEach(p=>{const items=state.deducted.filter(x=>x.place===p.k);const c=document.createElement('div');c.className='zcol';c.innerHTML=`<div class="zhead">${p.n} ($${p.v})　${items.length} ${p.unit}</div><div class="zvault"></div>`;const v=c.querySelector('.zvault');items.forEach(it=>{let e=moneyEl(p);e.draggable=false;e.title='點擊放回台上';e.onclick=()=>restoreDeduct(it.id);v.appendChild(e)});g.appendChild(c)});
+ }else{
+  const z=document.createElement('div');z.className='zone add-zone';
+  const pendingTotal=state.pending.reduce((s,x)=>s+x.val,0);
+  z.innerHTML=`<div class="zone-head"><div class="zone-title">➕ 待加入錢幣 <span class="note">（第二個數的錢幣；點擊或拖到上方加入）</span></div>
+  <div class="zone-meta"><span class="pill">尚未加入：${pendingTotal} 元</span><button class="btn" id="addAll">全部加入台上</button></div></div><div class="zone-grid" id="zoneGrid"></div>`;
+  w.appendChild(z);$('addAll').onclick=()=>{while(state.pending.length)addPending(state.pending[0].id);render()};
+  const g=$('zoneGrid');
+  PLACES.forEach(p=>{const items=state.pending.filter(x=>x.place===p.k);const c=document.createElement('div');c.className='zcol';c.innerHTML=`<div class="zhead">${p.n} ($${p.v})　${items.length} ${p.unit}</div><div class="zvault"></div>`;const v=c.querySelector('.zvault');items.forEach(it=>{let e=moneyEl(p);e.draggable=true;e.title='點擊加入台上';e.onclick=()=>addPending(it.id);e.addEventListener('dragstart',ev=>ev.dataTransfer.setData('text/plain',JSON.stringify({source:'pending',id:it.id})));v.appendChild(e)});g.appendChild(c)});
+  document.querySelectorAll('.col').forEach(c=>{c.addEventListener('dragover',e=>e.preventDefault());c.addEventListener('drop',e=>{e.preventDefault();try{let d=JSON.parse(e.dataTransfer.getData('text/plain'));if(d.source==='pending')addPending(d.id)}catch{}})});
+ }
+}
+function addPending(id){
+ const i=state.pending.findIndex(x=>x.id===id);if(i<0)return;const it=state.pending.splice(i,1)[0];addOne(it.place,'a');state.added.push(it);render();
+}
+function flash(msg,ok){const f=$('feedback');f.textContent=msg;f.className='feedback '+(ok?'ok':'warn')}
+$('checkBtn').onclick=()=>{
+ if(state.op==='sub'){
+   const d=state.deducted.reduce((s,x)=>s+x.val,0);
+   flash(d===state.b?'操作完成：扣除的金額與題目第二個數相同。':'目前扣除的金額還沒有和題目第二個數相同。',d===state.b);
+ }else{
+   flash(state.pending.length===0?'操作完成：第二個數的錢幣都已加入互動台。':'還有錢幣尚未加入互動台。',state.pending.length===0);
+ }
+};
+$('resetBtn').onclick=resetState;
+$('opBtn').onclick=()=>{state.op=state.op==='sub'?'add':'sub';$('opBtn').textContent=state.op==='sub'?'−':'＋'};
+function openKeyboard(which){
+ editing=which;editBuffer=String(which==='a'?state.a:state.b);$('keyboard').classList.add('show');
+ $('num1Btn').classList.toggle('active',which==='a');$('num2Btn').classList.toggle('active',which==='b');
+}
+$('num1Btn').onclick=()=>openKeyboard('a');$('num2Btn').onclick=()=>openKeyboard('b');
+document.querySelectorAll('.key').forEach(k=>k.onclick=()=>{
+ const x=k.dataset.k;
+ if(/^\d$/.test(x)){if(editBuffer==='0')editBuffer=x;else if(editBuffer.length<4)editBuffer+=x}
+ if(x==='del')editBuffer=editBuffer.slice(0,-1); if(x==='clear')editBuffer='';
+ const val=editBuffer===''?0:parseInt(editBuffer,10);
+ if(editing==='a'){state.a=val;$('num1Btn').textContent=editBuffer||'0'}else{state.b=val;$('num2Btn').textContent=editBuffer||'0'}
+ if(x==='done')$('keyboard').classList.remove('show');
+});
+$('applyBtn').onclick=()=>{
+ state.a=Math.max(0,Math.min(9999,Number(state.a)||0));state.b=Math.max(0,Math.min(9999,Number(state.b)||0));
+ $('num1Btn').textContent=state.a;$('num2Btn').textContent=state.b;$('keyboard').classList.remove('show');resetState();
+};
+resetState();
+</script>
+</body>
+</html>
