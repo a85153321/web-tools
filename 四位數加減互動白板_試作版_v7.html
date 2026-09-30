@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>四位數的加減練習</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --text:#243047; --muted:#697386;
+  --line:#dbe2ea; --accent:#377dff; --danger:#d9363e; --ok:#16865c;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;background:var(--bg);color:var(--text)}
+button{font:inherit;cursor:pointer}
+.screen{display:none;min-height:100vh}.screen.active{display:block}
+.home{max-width:900px;margin:auto;padding:60px 24px;text-align:center}
+.home h1{font-size:clamp(32px,5vw,54px);margin:0 0 12px}
+.home p{color:var(--muted);font-size:20px;margin-bottom:34px}
+.unit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.unit-card{border:2px solid var(--line);background:#fff;border-radius:22px;padding:32px 20px;box-shadow:0 8px 24px rgba(35,48,71,.08);transition:.15s}
+.unit-card:hover{transform:translateY(-2px);border-color:#9bbcff}
+.unit-no{font-weight:900;font-size:36px}.unit-title{font-size:25px;font-weight:800;margin-top:8px}
+
+.app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.topbar,.toolbar,.nav{display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid var(--line);padding:10px 14px;z-index:20}
+.topbar{justify-content:space-between}
+.topbar .left,.topbar .right,.toolbar .group{display:flex;align-items:center;gap:8px}
+.pill{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 13px;font-weight:700}
+.score{font-size:20px;font-weight:900;padding:8px 14px;border-radius:14px;background:#fff7d6}
+.title{font-weight:900;font-size:20px}
+
+.stage{position:relative;flex:1;overflow:auto;padding:24px}
+.problem-card{position:relative;max-width:1050px;min-height:680px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px 38px 28px;box-shadow:0 8px 30px rgba(35,48,71,.08)}
+.problem-label{text-align:center;color:var(--muted);font-weight:800;margin-bottom:18px}
+.question{font-size:clamp(25px,3vw,36px);font-weight:800;line-height:1.85;white-space:pre-line}
+.key{color:inherit}.key{color:inherit}
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.action{border:1px solid var(--line);background:#f8fafc;border-radius:13px;padding:10px 14px;font-weight:800}
+
+.visual-box{display:none;margin:14px 0 8px;padding:18px;background:#fbfcff;border:2px solid #d8e2f0;border-radius:18px}
+.visual-box.show{display:block}
+.diagram-title{font-size:17px;font-weight:900;color:#64748b;margin-bottom:12px}
+.bar-diagram{display:flex;flex-direction:column;gap:10px;max-width:760px}
+.bar-row{display:grid;grid-template-columns:90px 1fr auto;gap:10px;align-items:center;font-size:18px;font-weight:800}
+.bar{height:34px;border:2px solid #7890ad;border-radius:8px;background:linear-gradient(90deg,#eef4ff,#f9fbff);position:relative;min-width:80px}
+.bar.short{width:68%}.bar.medium{width:82%}.bar.full{width:100%}
+.diff{margin-left:100px;border-left:2px dashed #c05a62;padding-left:12px;color:#b4232b;font-weight:900}
+.numberline{position:relative;height:86px;margin:8px 20px 2px}
+.numberline .line{position:absolute;left:0;right:0;top:38px;height:4px;background:#7890ad;border-radius:3px}
+.numberline .tick{position:absolute;top:29px;width:2px;height:22px;background:#7890ad}
+.numberline .lab{position:absolute;top:55px;transform:translateX(-50%);font-weight:800}
+.numberline .point{position:absolute;top:10px;transform:translateX(-50%);font-weight:950;color:#b4232b}
+.steps{display:none;margin:12px 0 18px;padding:16px 18px;background:#fff9ec;border:1px solid #efd89a;border-radius:16px;font-size:19px;line-height:1.75}
+.steps.show{display:block}
+.steps .step{margin:4px 0}
+.steps b{color:#7a5610}
+
+.hint{display:none;margin:12px 0 22px;padding:18px 20px;background:#f5f8ff;border:1px solid #cddcff;border-radius:16px;font-size:20px;line-height:1.6;white-space:pre-line}
+.hint.show{display:block}
+.work-space{height:260px;margin:10px 0 16px;border-top:1px dashed #e5eaf1;border-bottom:1px dashed #e5eaf1;position:relative}
+.work-space::after{content:"畫筆書寫區";position:absolute;top:12px;right:14px;color:#b1bac7;font-size:14px;font-weight:700;pointer-events:none}
+.answer-area{position:relative;z-index:5;padding-top:2px}
+.choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;max-width:980px;margin:12px auto}
+.choice{border:2px solid #cfd8e6;background:#fff;border-radius:17px;padding:17px;font-size:23px;font-weight:900}
+.choice:hover{border-color:#8eb2ff;background:#f7faff}
+.choice.correct{border-color:#70c9a8;background:#effbf6}
+.feedback{text-align:center;min-height:38px;font-size:24px;font-weight:950;margin-top:8px}
+.feedback.ok{color:var(--ok)}.feedback.retry{color:#8b6410}
+
+#drawCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:8;pointer-events:none;border-radius:24px}
+.problem-card.draw-mode #drawCanvas{pointer-events:auto;touch-action:none}
+.problem-card.draw-mode .content{pointer-events:none}
+.content{position:relative;z-index:5}
+
+.toolbar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.toolbtn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 11px;font-weight:800}
+.toolbtn.active{background:#eaf2ff;border-color:#8eb2ff}
+.swatch{width:29px;height:29px;border-radius:50%;border:3px solid #fff;outline:1px solid #aab4c3;padding:0}
+.swatch.active{outline:3px solid #64748b}
+.range{width:100px}
+.nav{justify-content:flex-end;border-bottom:0}
+.next{border:0;background:var(--accent);color:#fff;border-radius:12px;padding:10px 18px;font-weight:900}
+
+.toast{position:fixed;left:50%;top:28%;transform:translate(-50%,-50%) scale(.9);z-index:100;background:#fff;border-radius:22px;padding:24px 42px;box-shadow:0 16px 60px rgba(0,0,0,.18);font-size:30px;font-weight:950;opacity:0;pointer-events:none;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+.numberline-hint{display:none;margin:14px 0 8px;padding:18px 24px 24px;background:#fbfcff;border:2px solid #d8e2f0;border-radius:18px}
+.numberline-hint.show{display:block}
+.numberline-title{font-size:18px;font-weight:900;color:#475569;margin-bottom:16px}
+.nl-wrap{position:relative;height:105px;margin:4px 26px 0}
+.nl-line{position:absolute;left:0;right:0;top:48px;height:5px;background:#64748b;border-radius:4px}
+.nl-tick{position:absolute;top:36px;width:3px;height:29px;background:#64748b;transform:translateX(-50%)}
+.nl-label{position:absolute;top:70px;transform:translateX(-50%);font-size:17px;font-weight:850;white-space:nowrap}
+.nl-point{position:absolute;top:4px;transform:translateX(-50%);font-size:17px;font-weight:950;color:#c53030;white-space:nowrap}
+.nl-point::after{content:"▼";display:block;text-align:center;font-size:18px;line-height:15px}
+
+.nl-point.hidden-point{opacity:0;pointer-events:none}
+.nl-point.revealed-point{opacity:1;transition:opacity .2s ease}
+.nl-reveal-note{text-align:center;margin-top:8px;font-size:16px;font-weight:800;color:#7c8798}
+
+.nl-note{text-align:center;margin-top:4px;font-size:17px;font-weight:800;color:#64748b}
+
+.answer{display:none;margin:18px 0;padding:14px 18px;border-radius:14px;background:#f3fbf7;border:1px solid #bce4d0;font-size:20px;font-weight:800}
+.answer.show{display:block}
+@media(max-width:700px){
+ .unit-grid{grid-template-columns:1fr}
+ .choices{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .choice{padding:13px 6px;font-size:19px}
+ .topbar{align-items:flex-start}.title{font-size:16px}
+ .problem-card{padding:22px 20px 24px;min-height:640px}
+ .work-space{height:220px}
+ .toolbar{max-height:150px;overflow:auto}
+}
+</style>
+</head>
+<body>
+<section id="home" class="screen active">
+  <div class="home">
+    <h1>四位數的加減練習</h1>
+    <p>今天要練習哪個單元？</p>
+    <div class="unit-grid">
+      <button class="unit-card" onclick="startUnit('23')"><div class="unit-no">2-3</div><div class="unit-title">四位數的減法</div></button>
+      <button class="unit-card" onclick="startUnit('24')"><div class="unit-no">2-4</div><div class="unit-title">加減估算</div></button>
+    </div>
+  </div>
+</section>
+
+<section id="practice" class="screen">
+<div class="app">
+  <div class="topbar">
+    <div class="left">
+      <button class="pill" onclick="goHome()">← 單元選擇</button>
+      <div id="unitTitle" class="title"></div>
+    </div>
+    <div class="right">
+      <div class="score">⭐ <span id="score">0</span> 分</div>
+      <button id="soundBtn" class="pill" onclick="toggleSound()">🔊</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div id="problemCard" class="problem-card">
+      <canvas id="drawCanvas"></canvas>
+      <div class="content">
+        <div class="problem-label">練習題</div>
+        <div id="question" class="question"></div>
+        <div class="action-row">
+          
+        </div>
+        <div id="numberlineHint" class="numberline-hint"></div>
+        <div class="work-space" aria-label="畫筆書寫區"></div>
+        <div class="answer-area">
+          <div style="text-align:center;font-weight:900;font-size:18px;margin-top:4px">算完後，選出你的答案</div><div id="choices" class="choices"></div>
+          <div id="feedback" class="feedback"></div>
+          <div id="answer" class="answer"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="group">
+      <button id="pointerBtn" class="toolbtn active" onclick="setMode('pointer')">👆 操作</button>
+      <button id="penBtn" class="toolbtn" onclick="setMode('pen')">✏️ 畫筆</button>
+      <button id="eraserBtn" class="toolbtn" onclick="setMode('eraser')">🧽 橡皮擦</button>
+    </div>
+    <div class="group">
+      <button class="swatch active" style="background:#e53935" data-color="#e53935" onclick="setColor(this)"></button>
+      <button class="swatch" style="background:#2563eb" data-color="#2563eb" onclick="setColor(this)"></button>
+      <button class="swatch" style="background:#111827" data-color="#111827" onclick="setColor(this)"></button>
+      <button class="swatch" style="background:#16a34a" data-color="#16a34a" onclick="setColor(this)"></button>
+      <span>粗細</span><input id="size" class="range" type="range" min="2" max="18" value="5">
+    </div>
+    <div class="group">
+      <button class="toolbtn" onclick="undo()">↶ 復原</button>
+      <button class="toolbtn" onclick="redo()">↷ 重做</button>
+      <button class="toolbtn" onclick="clearCanvas()">🗑 清除</button>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <button id="numberlineBtn" class="toolbtn" onclick="toggleNumberline()">📏 數線提示</button>
+      <button id="answerBtn" class="toolbtn" onclick="toggleAnswer()">👁 顯示答案</button>
+      <button class="next" onclick="nextProblem()">換一題 →</button>
+    </div>
+  </div>
+</div>
+</section>
+<div id="toast" class="toast">⭐ +1　答對了！</div>
+
+<script>
+const banks = {
+'23': [
+{q:'小安有 <k>3712元</k>，買文具花了 <k>1488元</k>。\\n小安還剩下多少元？',c:['3712 ＋ 1488','3712 － 1488'],a:1,h:'原來有3712元，花掉1488元。\\n想一想：錢是變多，還是變少？',ans:'3712－1488＝2224（元）'},
+{q:'工廠上午生產 <k>4235片</k> 餅乾，下午比上午 <k>少2761片</k>。\\n下午生產多少片？',c:['4235 ＋ 2761','4235 － 2761'],a:1,h:'先比較：上午比較多，下午比較少。\\n要找比較少的下午，可以從較多的數量拿掉相差的部分。',ans:'4235－2761＝1474（片）'},
+{q:'昨天賣出 <k>3010瓶</k> 牛奶，今天賣出 <k>1947瓶</k>。\\n兩天賣出的牛奶相差多少瓶？',c:['3010 ＋ 1947','3010 － 1947'],a:1,h:'「相差多少」是在找兩個數量中間差了多少。\\n先找出哪一個數比較大。',ans:'3010－1947＝1063（瓶）'},
+{q:'每天要走 <k>6000步</k>，早上已經走了 <k>2685步</k>。\\n還要走多少步才達到目標？',c:['6000 － 2685','6000 ＋ 2685'],a:0,h:'6000步是目標，2685步是已經完成的部分。\\n要找還沒有完成的部分。',ans:'6000－2685＝3315（步）'},
+{q:'圖書館有 <k>4025本</k> 書，借出了 <k>1808本</k>。\\n現在還有多少本？',c:['4025 － 1808','4025 ＋ 1808'],a:0,h:'原來的書借出去一部分後，數量會變少。',ans:'4025－1808＝2217（本）'},
+{q:'果園上午採收 <k>3200箱</k> 水果，比下午 <k>多1374箱</k>。\\n下午採收多少箱？',c:['3200 － 1374','3200 ＋ 1374'],a:0,h:'上午比較多，下午比較少。\\n題目要找的是比較少的下午。',ans:'3200－1374＝1826（箱）'},
+{q:'姐姐有 <k>5204元</k>，弟弟比姐姐 <k>少1374元</k>。\\n弟弟有多少元？',c:['5204 ＋ 1374','5204 － 1374'],a:1,h:'先別看到「少」就急著選。\\n比較一下：姐姐比較多，題目要找比較少的弟弟。',ans:'5204－1374＝3830（元）'},
+{q:'紅隊得到 <k>6287分</k>，藍隊得到 <k>5849分</k>。\\n兩隊相差多少分？',c:['6287 － 5849','6287 ＋ 5849'],a:0,h:'相差多少，就是找兩個數量之間的差。',ans:'6287－5849＝438（分）'},
+{q:'商店準備 <k>5000張</k> 貼紙，送出了 <k>1307張</k>。\\n現在還有多少張？',c:['5000 ＋ 1307','5000 － 1307'],a:1,h:'送出一部分後，原來的數量會變少。',ans:'5000－1307＝3693（張）'},
+{q:'小華有 <k>3250元</k>，他比小美 <k>少750元</k>。\\n小美有多少元？',c:['3250 － 750','3250 ＋ 750'],a:1,h:'注意：小華比較少，但題目要找比較多的小美。\\n所以不能只看到「少」就決定用減法。',ans:'3250＋750＝4000（元）'},
+{q:'甲班有 <k>2840本</k> 圖書，乙班比甲班 <k>多360本</k>。\\n乙班有多少本？',c:['2840 ＋ 360','2840 － 360'],a:0,h:'乙班比較多，題目要找較多的數量。',ans:'2840＋360＝3200（本）'},
+{q:'哥哥有 <k>7400元</k>，買腳踏車用了 <k>4007元</k>。\\n還有多少元？',c:['7400 － 4007','7400 ＋ 4007'],a:0,h:'買東西後，手上的錢會變少。',ans:'7400－4007＝3393（元）'},
+{q:'校慶準備 <k>4008瓶</k> 水，活動中喝掉 <k>1345瓶</k>。\\n還有多少瓶？',c:['4008 ＋ 1345','4008 － 1345'],a:1,h:'喝掉的是原有數量中的一部分。',ans:'4008－1345＝2663（瓶）'},
+{q:'小宇有 <k>8114點</k>，兌換禮物用了 <k>5437點</k>。\\n還剩多少點？',c:['8114 － 5437','8114 ＋ 5437'],a:0,h:'使用點數之後，點數會變少。',ans:'8114－5437＝2677（點）'},
+{q:'A隊跑了 <k>4600公尺</k>，B隊比A隊 <k>少1685公尺</k>。\\nB隊跑了多少公尺？',c:['4600 － 1685','4600 ＋ 1685'],a:0,h:'A隊比較多，B隊比較少。要找較少的B隊。',ans:'4600－1685＝2915（公尺）'},
+{q:'倉庫有 <k>7030箱</k> 貨物，運走 <k>2846箱</k>。\\n還有多少箱？',c:['7030 ＋ 2846','7030 － 2846'],a:1,h:'運走一部分後，倉庫裡的數量變少。',ans:'7030－2846＝4184（箱）'},
+{q:'哥哥讀了 <k>5030頁</k>，弟弟讀了 <k>2785頁</k>。\\n兩人讀的頁數相差多少頁？',c:['5030 － 2785','5030 ＋ 2785'],a:0,h:'找「相差」時，先比較哪個數量比較大。',ans:'5030－2785＝2245（頁）'},
+{q:'學校要募集 <k>8000本</k> 書，目前已有 <k>3657本</k>。\\n還需要多少本才達到目標？',c:['8000 ＋ 3657','8000 － 3657'],a:1,h:'8000是目標，3657是已經有的。\\n要找還缺少的部分。',ans:'8000－3657＝4343（本）'},
+{q:'姐姐有 <k>2860元</k>，姐姐比弟弟 <k>多640元</k>。\\n弟弟有多少元？',c:['2860 ＋ 640','2860 － 640'],a:1,h:'姐姐比較多，弟弟比較少。題目要找弟弟。',ans:'2860－640＝2220（元）'},
+{q:'小美有 <k>2750張</k> 卡片，她比小安 <k>少450張</k>。\\n小安有多少張？',c:['2750 ＋ 450','2750 － 450'],a:0,h:'小美比較少，小安比較多。題目要找比較多的數量。',ans:'2750＋450＝3200（張）'}
+],
+'24': [
+{q:'一杯牛奶有 <k>108大卡</k>。\\n大約是幾百大卡？',c:['約100大卡','約200大卡','約300大卡'],a:0,h:'想像100到200的數線。108離哪個整百數比較近？',ans:'108比較接近100，所以大約是100大卡。'},
+{q:'一份點心有 <k>193大卡</k>。\\n大約是幾百大卡？',c:['約100大卡','約200大卡','約300大卡'],a:1,h:'193離200很近。',ans:'193大約是200大卡。'},
+{q:'水果沙拉有 <k>295大卡</k>。\\n大約是幾百大卡？',c:['約200大卡','約300大卡','約400大卡'],a:1,h:'比較295到200和300的距離。',ans:'295大約是300大卡。'},
+{q:'午餐有 <k>613大卡</k>。\\n大約是幾百大卡？',c:['約500大卡','約600大卡','約700大卡'],a:1,h:'613比較接近600。',ans:'613大約是600大卡。'},
+{q:'上衣 <k>499元</k>，褲子 <k>299元</k>。\\n買一件上衣和一件褲子，<k>大約</k>要多少元？',c:['約700元','約800元','約900元'],a:1,h:'499 → 約500\\n299 → 約300\\n再把兩個好算的數合起來。',ans:'500＋300＝800，所以大約800元。'},
+{q:'故事書 <k>389元</k>，文具 <k>208元</k>。\\n合起來<k>大約</k>多少元？',c:['約500元','約600元','約700元'],a:1,h:'389 → 約400\\n208 → 約200',ans:'400＋200＝600，所以大約600元。'},
+{q:'玩具 <k>295元</k>，球 <k>102元</k>。\\n合起來<k>大約</k>多少元？',c:['約300元','約400元','約500元'],a:1,h:'295 → 約300\\n102 → 約100',ans:'300＋100＝400，所以大約400元。'},
+{q:'小安有 <k>900元</k>，買水果用了 <k>312元</k>。\\n<k>大約</k>還剩多少元？',c:['約500元','約600元','約700元'],a:1,h:'312 → 約300\\n900－300＝？',ans:'900－300＝600，所以大約剩600元。'},
+{q:'小明有 <k>1000元</k>，買玩具用了 <k>389元</k>。\\n<k>大約</k>還剩多少元？',c:['約500元','約600元','約700元'],a:1,h:'389 → 約400\\n1000－400＝？',ans:'1000－400＝600，所以大約剩600元。'},
+{q:'步道全長 <k>3852公尺</k>。\\n大約是幾千公尺？',c:['約3000公尺','約4000公尺','約5000公尺'],a:1,h:'想像3000到4000的數線，3852比較靠近哪一邊？',ans:'3852比較接近4000，所以大約4000公尺。'},
+{q:'一段路長 <k>1889公尺</k>。\\n大約是幾千公尺？',c:['約1000公尺','約2000公尺','約3000公尺'],a:1,h:'1889離2000比離1000近。',ans:'1889大約是2000公尺。'},
+{q:'一段路長 <k>2941公尺</k>。\\n大約是幾千公尺？',c:['約2000公尺','約3000公尺','約4000公尺'],a:1,h:'2941非常接近3000。',ans:'2941大約是3000公尺。'},
+{q:'第一段 <k>1889公尺</k>，第二段 <k>2941公尺</k>。\\n兩段合起來<k>大約</k>多少公尺？',c:['約4000公尺','約5000公尺','約6000公尺'],a:1,h:'1889 → 約2000\\n2941 → 約3000',ans:'2000＋3000＝5000，所以大約5000公尺。'},
+{q:'上午走了 <k>3852公尺</k>，下午走了 <k>2123公尺</k>。\\n一共<k>大約</k>走多少公尺？',c:['約5000公尺','約6000公尺','約7000公尺'],a:1,h:'3852 → 約4000\\n2123 → 約2000',ans:'4000＋2000＝6000，所以大約6000公尺。'},
+{q:'全程約 <k>9000公尺</k>，已經走了約 <k>6000公尺</k>。\\n<k>大約</k>還有多少公尺？',c:['約2000公尺','約3000公尺','約4000公尺'],a:1,h:'要找剩下的路程：9000－6000。',ans:'9000－6000＝3000，所以大約還有3000公尺。'},
+{q:'學校有 <k>7189本</k> 書。\\n大約是幾千本？',c:['約6000本','約7000本','約8000本'],a:1,h:'7189比較接近7000還是8000？',ans:'7189大約是7000本。'},
+{q:'小華估算 <k>2903＋1110</k> 的答案是 <k>3013</k>。\\n這個答案合理嗎？',c:['合理','不合理'],a:1,h:'2903 → 約3000\\n1110 → 約1000\\n估算結果應該接近4000。',ans:'不合理。3000＋1000大約是4000，3013差得太多。'},
+{q:'小美估算 <k>4120－1980</k> 的答案大約是 <k>2000</k>。\\n合理嗎？',c:['合理','不合理'],a:0,h:'4120 → 約4000\\n1980 → 約2000',ans:'合理。4000－2000大約是2000。'},
+{q:'一臺相機 <k>4890元</k>，配件 <k>2080元</k>。\\n合起來<k>大約</k>多少元？',c:['約6000元','約7000元','約8000元'],a:1,h:'4890 → 約5000\\n2080 → 約2000',ans:'5000＋2000＝7000，所以大約7000元。'},
+{q:'原有 <k>8050張</k> 紙，用掉 <k>3120張</k>。\\n<k>大約</k>還有多少張？',c:['約4000張','約5000張','約6000張'],a:1,h:'8050 → 約8000\\n3120 → 約3000',ans:'8000－3000＝5000，所以大約還有5000張。'}
+]};
+
+let unit='23', idx=0, score=0, soundOn=true, answered=false;
+const $=s=>document.querySelector(s);
+function startUnit(u){unit=u; idx=0; score=0; $('#score').textContent=score; $('#home').classList.remove('active'); $('#practice').classList.add('active'); $('#unitTitle').textContent=u==='23'?'2-3 四位數的減法':'2-4 加減估算'; render();}
+function goHome(){ $('#practice').classList.remove('active'); $('#home').classList.add('active'); setMode('pointer');}
+
+
+function resultChoices(p){
+  const m=p.ans.match(/＝\s*([0-9]+)/) || p.ans.match(/大約(?:是|剩|還有)?\s*([0-9]+)/);
+  if(!m) return p.c; // e.g. 合理/不合理 remains appropriate as a result judgment
+  const correct=Number(m[1]);
+  // If existing choices are already pure result labels (no ＋－), keep them.
+  if(p.c.every(x=>!/[＋－]/.test(x))) return p.c;
+  const delta = correct>=1000 ? 100 : (correct>=100 ? 10 : 1);
+  let vals=[Math.max(0,correct-delta), correct, correct+delta];
+  return vals.map(v=>String(v));
+}
+
+function numsFromQuestion(q){
+  return [...q.replace(/<[^>]+>/g,'').matchAll(/\d+/g)].map(m=>Number(m[0]));
+}
+function cleanQuestion(q){return q.replace(/<[^>]+>/g,'').replaceAll('\\n','\n');}
+function getSubjects(raw){
+  const out=[];
+  const rgx=/([^，。\n]{1,10}?)(?:有|生產|賣出|採收|跑了|讀了|走了|準備|募集|原有|得到)\s*(\d+)/g;
+  let m; while((m=rgx.exec(raw))!==null) out.push({name:m[1].trim(),value:Number(m[2])});
+  return out;
+}
+function makeVisual(p){
+  const raw=cleanQuestion(p.q), n=numsFromQuestion(p.q), subs=getSubjects(raw);
+  if(unit==='24' && (/幾百|幾千/.test(raw)) && n.length){
+    const x=n[0],base=/幾千/.test(raw)?1000:100,lo=Math.floor(x/base)*base,hi=lo+base,mid=lo+base/2;
+    const pct=Math.max(4,Math.min(96,(x-lo)/base*100));
+    return `<div class="diagram-title">數線：看看 ${x} 比較靠近哪一邊</div><div class="numberline"><div class="line"></div>
+    <div class="tick" style="left:0%"></div><div class="lab" style="left:0%">${lo}</div>
+    <div class="tick" style="left:50%"></div><div class="lab" style="left:50%">${mid}</div>
+    <div class="tick" style="left:100%"></div><div class="lab" style="left:100%">${hi}</div>
+    <div class="point" style="left:${pct}%">▼ ${x}</div></div>`;
+  }
+  const cmp=raw.match(/([^，。\n]{1,10}?)比([^，。\n]{1,10}?)(少|多)\s*(\d+)/);
+  if(cmp){
+    const A=cmp[1].trim(),B=cmp[2].trim(),rel=cmp[3],diff=cmp[4];
+    const known=subs.find(x=>x.name===B||x.name.includes(B)||B.includes(x.name));
+    const knownVal=known?known.value:(n[0]||'？');
+    const more=rel==='多'?A:B, less=rel==='多'?B:A;
+    return `<div class="diagram-title">長條圖：先比較題目中的人物／事物</div><div class="bar-diagram">
+      <div class="bar-row"><span>${more}</span><div class="bar full"></div><strong>${rel==='多'?'？':knownVal}</strong></div>
+      <div class="bar-row"><span>${less}</span><div class="bar short"></div><strong>${rel==='多'?knownVal:'？'}</strong></div>
+      <div class="diff">相差：${diff}</div></div>`;
+  }
+  if(/相差/.test(raw) && subs.length>=2){
+    const a=subs[0],b=subs[1],big=a.value>=b.value?a:b,small=a.value>=b.value?b:a;
+    return `<div class="diagram-title">長條圖：比較「${big.name}」和「${small.name}」</div><div class="bar-diagram">
+      <div class="bar-row"><span>${big.name}</span><div class="bar full"></div><strong>${big.value}</strong></div>
+      <div class="bar-row"><span>${small.name}</span><div class="bar short"></div><strong>${small.value}</strong></div>
+      <div class="diff">相差：？</div></div>`;
+  }
+  if(unit==='24' && n.length>=2){
+    let labels=[];
+    const lines=raw.split('\n').join('，').split('，');
+    for(const line of lines){const m=line.match(/([^，。]{1,12}?)\s*(\d+)/);if(m)labels.push(m[1].trim());}
+    return `<div class="diagram-title">量化整理：把題目中的數量放在一起看</div><div class="bar-diagram">
+      <div class="bar-row"><span>${labels[0]||'第一個量'}</span><div class="bar full"></div><strong>${n[0]}</strong></div>
+      <div class="bar-row"><span>${labels[1]||'第二個量'}</span><div class="bar medium"></div><strong>${n[1]}</strong></div></div>`;
+  }
+  if(n.length>=2){
+    const subject=subs[0]?.name||'原有';
+    let part='已知部分';
+    if(/買.+用了|花了/.test(raw))part='花掉／用掉'; else if(/借出/.test(raw))part='借出';
+    else if(/送出/.test(raw))part='送出'; else if(/運走/.test(raw))part='運走'; else if(/喝掉/.test(raw))part='喝掉';
+    else if(/已經走|已走/.test(raw))part='已完成'; else if(/目前已有/.test(raw))part='目前已有';
+    return `<div class="diagram-title">部分－整體圖：看清楚「${subject}」的數量變化</div><div class="bar-diagram">
+      <div class="bar-row"><span>${subject}</span><div class="bar full"></div><strong>${n[0]}</strong></div>
+      <div class="bar-row"><span>${part}</span><div class="bar medium"></div><strong>${n[1]}</strong></div>
+      <div class="diff">要找的部分：？</div></div>`;
+  }
+  return `<div class="diagram-title">先把題目中的主詞和數量畫出來。</div>`;
+}
+function makeSteps(p){
+  const raw=p.q.replace(/<[^>]+>/g,'');
+  const n=numsFromQuestion(p.q);
+  if(unit==='24'){
+    if(/幾百|幾千/.test(raw)){
+      return `<div class="step"><b>① 找數字：</b>${n[0]??''}</div>
+      <div class="step"><b>② 找附近的整數：</b>它在哪兩個整百／整千數之間？</div>
+      <div class="step"><b>③ 比距離：</b>它比較接近哪一邊？</div>
+      <div class="step"><b>④ 再作答：</b>選出最接近的估計值。</div>`;
+    }
+    return `<div class="step"><b>① 找已知：</b>圈出題目中的數字。</div>
+    <div class="step"><b>② 先估數：</b>把數字換成附近、比較好算的整百或整千數。</div>
+    <div class="step"><b>③ 看題意：</b>數量是合起來，還是拿走／比較？</div>
+    <div class="step"><b>④ 算一算：</b>用估過的數字算出大約結果。</div>`;
+  }
+  return `<div class="step"><b>① 找已知：</b>題目告訴我哪些數量？</div>
+  <div class="step"><b>② 看問題：</b>題目要我找哪一個量？</div>
+  <div class="step"><b>③ 比大小／看關係：</b>誰比較多？誰比較少？是全部、部分，還是相差？</div>
+  <div class="step"><b>④ 決定方法：</b>先說明為什麼要加或減，再列式。</div>
+  <div class="step"><b>⑤ 紙筆計算：</b>把直式和退位過程寫清楚，再選最後答案。</div>`;
+}
+
+
+function niceRangeForNumbers(values){
+  const maxv=Math.max(...values), minv=Math.min(...values);
+  const base=maxv>=1000?1000:100;
+  // If all values sit in different adjacent rounding intervals, use a shared span that contains all.
+  let lo=Math.floor(minv/base)*base;
+  let hi=Math.ceil(maxv/base)*base;
+  if(hi===lo) hi=lo+base;
+  // Give at least one full interval and keep the line readable.
+  if(hi-lo<base) hi=lo+base;
+  return {lo,hi,base};
+}
+function makeNumberlineHint(p){
+  const nums=numsFromQuestion(p.q);
+  if(!nums.length) return '';
+
+  // Use at most the first two source quantities. Put them on ONE line when the problem compares/combines two estimates.
+  const values=nums.slice(0,Math.min(2,nums.length));
+  const {lo,hi,base}=niceRangeForNumbers(values);
+  const span=hi-lo;
+  const ticks=[];
+  // Include endpoints and useful hundred/thousand interval ticks.
+  for(let v=lo;v<=hi;v+=base){
+    ticks.push(v);
+    if(v+base/2<hi) ticks.push(v+base/2);
+  }
+  if(!ticks.includes(hi)) ticks.push(hi);
+  const tickHtml=ticks.map(v=>{
+    const pct=(v-lo)/span*100;
+    return `<div class="nl-tick" style="left:${pct}%"></div><div class="nl-label" style="left:${pct}%">${v}</div>`;
+  }).join('');
+  const points=values.map((x,i)=>{
+    const pct=Math.max(1,Math.min(99,(x-lo)/span*100));
+    return `<div class="nl-point hidden-point" data-point="${i}" style="left:${pct}%">${x}</div>`;
+  }).join('');
+
+  const unitText=base===1000?'整千':'整百';
+  return `<div class="numberline-title">${values.length>1?'把題目中的兩個數放在同一條數線上觀察':'先看看這個數在哪兩個'+unitText+'數之間'}</div>
+    <div class="nl-wrap">
+      <div class="nl-line"></div>${tickHtml}${points}
+    </div>
+    <div class="nl-reveal-note">再按一次「顯示位置」，才會標出題目數字的位置。</div>`;
+}
+let numberlineStage=0;
+function toggleNumberline(){
+  const box=$('#numberlineHint'), btn=$('#numberlineBtn');
+  if(numberlineStage===0){
+    box.classList.add('show');
+    box.querySelectorAll('.nl-point').forEach(x=>x.classList.remove('revealed-point'));
+    btn.textContent='📍 顯示位置';
+    numberlineStage=1;
+  }else if(numberlineStage===1){
+    box.querySelectorAll('.nl-point').forEach(x=>x.classList.add('revealed-point'));
+    const note=box.querySelector('.nl-reveal-note'); if(note) note.textContent='位置已顯示，可以比較它們靠近哪個整百／整千數。';
+    btn.textContent='📏 隱藏數線';
+    numberlineStage=2;
+  }else{
+    box.classList.remove('show');
+    btn.textContent='📏 數線提示';
+    numberlineStage=0;
+  }
+  requestAnimationFrame(resizeCanvas);
+}
+function render(){
+ answered=false; clearCanvas(); setMode('pointer');
+ const p=banks[unit][idx];
+ const nlBtn=$('#numberlineBtn'), nlBox=$('#numberlineHint');
+ nlBox.classList.remove('show');
+ numberlineStage=0;
+ nlBtn.textContent='📏 數線提示';
+ if(unit==='24'){
+   nlBtn.style.display='';
+   nlBox.innerHTML=makeNumberlineHint(p);
+ }else{
+   nlBtn.style.display='none';
+   nlBox.innerHTML='';
+ }
+
+ $('#answer').classList.remove('show'); $('#answer').textContent=p.ans;
+ $('#answerBtn').textContent='👁 顯示答案';
+ $('#feedback').className='feedback'; $('#feedback').textContent='';
+ $('#question').innerHTML=p.q.replaceAll('\\n','<br>').replaceAll('<k>','<span class="key">').replaceAll('</k>','</span>');
+ const box=$('#choices'); box.innerHTML='';
+ const rc=resultChoices(p); p._shownChoices=rc;
+ let answerNum=(p.ans.match(/＝\s*([0-9]+)/)||[])[1];
+ p._shownAnswer = answerNum && rc.every(x=>!/[＋－]/.test(x)) ? rc.findIndex(x=>Number((x.match(/\d+/)||[])[0])===Number(answerNum)) : p.a;
+ rc.forEach((x,i)=>{let b=document.createElement('button');b.className='choice';b.textContent=x;b.onclick=()=>choose(i,b);box.appendChild(b)});
+ requestAnimationFrame(resizeCanvas);
+}
+function nextProblem(){idx=(idx+1)%banks[unit].length; render();}
+function toggleVisual(){let v=$('#visual');v.classList.toggle('show');$('#keyBtn').textContent=v.classList.contains('show')?'📊 隱藏視覺化':'📊 視覺化題意';requestAnimationFrame(resizeCanvas);}
+function toggleSteps(){let st=$('#steps');st.classList.toggle('show');$('#hintBtn').textContent=st.classList.contains('show')?'🧭 隱藏步驟':'🧭 確認步驟';requestAnimationFrame(resizeCanvas);}
+function toggleAnswer(){let a=$('#answer');a.classList.toggle('show');$('#answerBtn').textContent=a.classList.contains('show')?'👁 隱藏答案':'👁 顯示答案';}
+function choose(i,b){
+ const p=banks[unit][idx], f=$('#feedback');
+ if(i===(Number.isInteger(p._shownAnswer)?p._shownAnswer:p.a)){
+   document.querySelectorAll('.choice').forEach(x=>x.classList.remove('correct')); b.classList.add('correct');
+   f.className='feedback ok'; f.textContent='答對了！';
+   if(!answered){answered=true; score++; $('#score').textContent=score; showToast(); if(soundOn) successSound();}
+ }else{
+   f.className='feedback retry'; f.textContent='再想想看';
+ }
+}
+function showToast(){let t=$('#toast');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),900)}
+function toggleSound(){soundOn=!soundOn;$('#soundBtn').textContent=soundOn?'🔊':'🔇'}
+function successSound(){
+ try{
+  const ac=new (window.AudioContext||window.webkitAudioContext)();
+  [523.25,659.25,783.99].forEach((freq,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(.0001,ac.currentTime+i*.08);g.gain.exponentialRampToValueAtTime(.12,ac.currentTime+i*.08+.01);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+i*.08+.12);o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+i*.08);o.stop(ac.currentTime+i*.08+.14);});
+ }catch(e){}
+}
+
+// Drawing
+const canvas=$('#drawCanvas'), ctx=canvas.getContext('2d');
+let mode='pointer', color='#e53935', drawing=false, history=[], redoStack=[];
+function resizeCanvas(){
+ const card=$('#problemCard'), r=card.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+ let snapshot=null; if(canvas.width&&canvas.height) snapshot=canvas.toDataURL();
+ canvas.width=Math.max(1,Math.round(r.width*dpr)); canvas.height=Math.max(1,Math.round(r.height*dpr));
+ canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+ ctx.setTransform(dpr,0,0,dpr,0,0); ctx.lineCap='round';ctx.lineJoin='round';
+ if(snapshot){let im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=snapshot;}
+}
+window.addEventListener('resize',()=>requestAnimationFrame(resizeCanvas));
+function setMode(m){mode=m;$('#problemCard').classList.toggle('draw-mode',m!=='pointer');$('#pointerBtn').classList.toggle('active',m==='pointer');$('#penBtn').classList.toggle('active',m==='pen');$('#eraserBtn').classList.toggle('active',m==='eraser');}
+function setColor(el){color=el.dataset.color;document.querySelectorAll('.swatch').forEach(x=>x.classList.remove('active'));el.classList.add('active');setMode('pen')}
+function pos(e){const r=canvas.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}}
+function saveState(){history.push(canvas.toDataURL());if(history.length>30)history.shift();redoStack=[]}
+function begin(e){if(mode==='pointer')return;e.preventDefault();saveState();drawing=true;let p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)}
+function move(e){if(!drawing)return;e.preventDefault();let p=pos(e);ctx.globalCompositeOperation=mode==='eraser'?'destination-out':'source-over';ctx.strokeStyle=color;ctx.lineWidth=mode==='eraser'?30:+$('#size').value;ctx.lineTo(p.x,p.y);ctx.stroke()}
+function end(){drawing=false;ctx.closePath();ctx.globalCompositeOperation='source-over'}
+canvas.addEventListener('pointerdown',begin);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',end);canvas.addEventListener('pointerleave',end);
+function restore(data){const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);if(!data)return;let im=new Image();im.onload=()=>ctx.drawImage(im,0,0,r.width,r.height);im.src=data}
+function undo(){if(!history.length)return;redoStack.push(canvas.toDataURL());restore(history.pop())}
+function redo(){if(!redoStack.length)return;history.push(canvas.toDataURL());restore(redoStack.pop())}
+function clearCanvas(){const r=canvas.getBoundingClientRect(); if(canvas.width&&canvas.height){history.push(canvas.toDataURL());redoStack=[];} ctx.clearRect(0,0,r.width,r.height)}
+</script>
+</body>
+</html>

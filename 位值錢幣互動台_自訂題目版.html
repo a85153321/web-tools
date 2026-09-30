@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>位值錢幣互動台｜視覺整合版</title>
+<style>
+:root{--bg:#f5f7fb;--ink:#172033;--muted:#667085;--line:#dfe5ee;--th:#7c3aed;--hu:#2563eb;--te:#16803a;--on:#d12c35}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft JhengHei",sans-serif;color:var(--ink);padding:16px;user-select:none}.app{max-width:1420px;margin:auto}.problem{display:flex;justify-content:center;align-items:center;gap:12px;margin:4px 0 18px}.part{border:0;background:transparent;border-radius:14px;padding:8px 14px;font-size:2.6rem;font-weight:950;cursor:pointer;transition:.15s}.part:hover,.part:focus{background:#fff;outline:2px solid #cbd5e1}.operator{min-width:64px}.pop{position:absolute;z-index:20;background:#fff;border:1px solid #d7dce5;border-radius:16px;padding:12px;box-shadow:0 14px 36px #0f172a26;display:none}.pop.show{display:block}.keys{display:grid;grid-template-columns:repeat(3,72px);gap:7px}.key{height:54px;border:1px solid #d4dae4;background:#fff;border-radius:10px;font-size:1.25rem;font-weight:900;cursor:pointer}.key.ok{background:#4f46e5;color:white}.opkeys{display:flex;gap:8px}.pop.op-center{position:fixed!important;left:50%!important;top:96px!important;transform:translateX(-50%);z-index:60}.opkey{width:90px;height:64px;border:2px solid #d7dce5;background:#fff;border-radius:12px;font-size:2rem;font-weight:950;cursor:pointer}.board{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px}.cols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.col{--c:#64748b;--soft:#f8fafc;border:2px solid color-mix(in srgb,var(--c) 38%,white);border-radius:17px;overflow:hidden;display:flex;flex-direction:column;min-width:0}.th{--c:var(--th);--soft:#f5f3ff}.hu{--c:var(--hu);--soft:#eff6ff}.te{--c:var(--te);--soft:#f0fdf4}.on{--c:var(--on);--soft:#fff1f2}.head{background:var(--soft);padding:10px;text-align:center;border-bottom:2px solid color-mix(in srgb,var(--c) 24%,white)}.place{color:var(--c);font-size:1.22rem;font-weight:950}
+.have-row{display:flex;align-items:center;justify-content:center;gap:5px;min-height:42px}
+.place-mark{color:#dc2626;font-size:1.25rem;font-weight:950;line-height:1;min-width:20px}
+.place-mark.left{text-align:right}
+.place-mark.right{text-align:left}.have-label{text-align:center;color:var(--c);font-weight:900;margin-top:2px}.have-num{text-align:center;color:var(--c);font-size:2.2rem;font-weight:950;line-height:1.1}.have-unit{text-align:center;color:#596579;font-size:.78rem;font-weight:800;margin-top:2px}.vault{min-height:230px;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;justify-content:center;background:#fff;transition:.15s}.vault.drag{box-shadow:inset 0 0 0 4px color-mix(in srgb,var(--c) 25%,transparent);background:var(--soft)}.money{cursor:grab;touch-action:none;filter:drop-shadow(0 2px 2px #0002);transition:transform .12s}.money:hover{transform:translateY(-2px)}.money svg{display:block}.borrow{outline:3px dashed #f59e0b;outline-offset:2px;border-radius:8px}.exchange{padding:9px;background:#fafbfc;border-top:1px solid var(--line);text-align:center;min-height:58px}.xbtn{width:100%;min-height:40px;border:1px solid color-mix(in srgb,var(--c) 45%,white);background:var(--soft);color:var(--c);border-radius:10px;font-size:.8rem;font-weight:950;cursor:pointer}.take{background:var(--soft);border-top:3px solid color-mix(in srgb,var(--c) 55%,white);padding:11px;min-height:220px;transition:.15s}.take.drag{box-shadow:inset 0 0 0 4px color-mix(in srgb,var(--c) 35%,transparent);background:color-mix(in srgb,var(--c) 12%,white)}.take-title{text-align:center;color:var(--c);font-weight:900}.take-num{text-align:center;color:var(--c);font-size:2.2rem;font-weight:950;line-height:1.1}.take-unit{text-align:center;color:#596579;font-size:.78rem;font-weight:800;margin-bottom:8px}.taken{min-height:88px;background:#fff;border:2px dashed color-mix(in srgb,var(--c) 40%,white);border-radius:11px;padding:7px;display:flex;gap:5px;flex-wrap:wrap;align-content:flex-start;justify-content:center}.progress{text-align:center;color:var(--c);font-size:.88rem;font-weight:950;margin-top:7px}
+.sum-btn{display:block;margin:7px auto 0;min-width:92px;height:34px;border:1px solid color-mix(in srgb,var(--c) 45%,white);background:#fff;color:var(--c);border-radius:9px;font-size:.82rem;font-weight:950;cursor:pointer}
+.carry-note{display:none;text-align:center;color:var(--c);font-size:.82rem;font-weight:950;padding:5px 7px;background:#fff;border:1px dashed color-mix(in srgb,var(--c) 45%,white);border-radius:8px;margin:6px 8px 0}
+.carry-note.show{display:block}
+.col.drag-left{box-shadow:-7px 0 0 color-mix(in srgb,var(--c) 30%,transparent)}
+.col.drag-right{box-shadow:7px 0 0 color-mix(in srgb,var(--c) 30%,transparent)}.drag-hint{text-align:center;font-size:.74rem;color:#7a8494;font-weight:750;margin-top:5px}.bottom{display:flex;justify-content:center;gap:10px;margin-top:14px}.btn{height:48px;border-radius:12px;padding:0 20px;font-size:.95rem;font-weight:900;cursor:pointer}.check{border:0;background:#4f46e5;color:white}.reset{border:1px solid #cbd5e1;background:white}.toggle-on{border-color:#4f46e5!important;background:#eef2ff!important;color:#4338ca!important}.feedback{text-align:center;min-height:25px;margin-top:9px;font-weight:900}.bad{color:#c81e1e}.ok{color:#087f5b}
+.backdrop{position:fixed;inset:0;background:#0f172a66;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.backdrop.show{display:flex}.modal{width:min(390px,100%);background:white;border-radius:22px;padding:28px;text-align:center;box-shadow:0 24px 70px #0004}.success-mark{width:82px;height:82px;margin:auto;border-radius:50%;background:#ecfdf5;border:3px solid #34d399;display:flex;align-items:center;justify-content:center;color:#059669;font-size:3rem;font-weight:950}.modal h2{font-size:1.8rem;margin:14px 0 5px}.modal p{color:var(--muted);font-weight:700}.modal button{margin-top:13px;border:0;background:#4f46e5;color:#fff;border-radius:11px;padding:12px 22px;font-weight:900;cursor:pointer}
+@media(max-width:900px){.cols{grid-template-columns:repeat(2,1fr)}.part{font-size:2rem}.vault{min-height:210px}.take{min-height:190px}}@media(max-width:520px){body{padding:7px}.board{padding:7px}.cols{gap:6px}.col{border-radius:12px}.part{font-size:1.5rem;padding:6px}.vault{min-height:185px;padding:7px;gap:5px}.take{min-height:170px;padding:7px}.keys{grid-template-columns:repeat(3,64px)}}
+</style></head>
+<body><div class="app">
+<div class="problem" id="problem"><button class="part" id="aPart">8430</button><button class="part operator" id="opPart">−</button><button class="part" id="bPart">1458</button><span style="font-size:2rem;font-weight:900">＝</span><button class="part" id="ansPart" style="min-width:150px;color:#94a3b8">答案</button></div>
+<div class="pop" id="numPop"><div class="keys"><button class="key">1</button><button class="key">2</button><button class="key">3</button><button class="key">4</button><button class="key">5</button><button class="key">6</button><button class="key">7</button><button class="key">8</button><button class="key">9</button><button class="key" data-a="del">⌫</button><button class="key">0</button><button class="key ok" data-a="ok">✓</button></div></div>
+<div class="pop" id="opPop"><div class="opkeys"><button class="opkey" data-op="add">＋</button><button class="opkey" data-op="sub">−</button></div></div>
+<section class="board"><div class="cols" id="cols"></div><div class="feedback" id="feedback"></div><div class="bottom"><button class="btn reset" id="clickMode">☝ 點擊移動：關</button><button class="btn check" id="check">✓ 檢查</button><button class="btn reset" id="reset">↺ 重設</button></div></section>
+</div>
+<div class="backdrop" id="success"><div class="modal"><div class="success-mark">✓</div><h2>答對了！</h2><p id="answerResult">答案是</p><button id="closeSuccess">我知道了</button></div></div>
+<script>
+(()=>{let S={a:8430,b:1458,op:'sub',v:{},taken:[],pending:[],addDone:{},summed:{},carryNotes:{},subCalculated:{},subDisplay:{},borrowNotes:{},placeMarks:{}},editing='a',buf='',answer='',clickMove=false;
+const P=[{k:'thousand',v:1000,n:'千位',c:'th'},{k:'hundred',v:100,n:'百位',c:'hu'},{k:'ten',v:10,n:'十位',c:'te'},{k:'one',v:1,n:'個位',c:'on'}],$=x=>document.getElementById(x);
+const dig=n=>({thousand:Math.floor(n/1000)%10,hundred:Math.floor(n/100)%10,ten:Math.floor(n/10)%10,one:n%10}),uid=()=>Math.random().toString(36).slice(2)+Date.now();
+function svg(v){if(v===1000)return `<svg width="86" height="44" viewBox="0 0 172 88" aria-label="1000元"><defs><linearGradient id="g1" x1="0" x2="1"><stop stop-color="#ede9fe"/><stop offset="1" stop-color="#ddd6fe"/></linearGradient></defs><rect x="2" y="2" width="168" height="84" rx="12" fill="url(#g1)" stroke="#7c3aed" stroke-width="4"/><rect x="11" y="11" width="150" height="66" rx="8" fill="none" stroke="#a78bfa" stroke-width="2"/><circle cx="38" cy="44" r="18" fill="#fff" opacity=".72"/><path d="M29 51c6-17 15-23 23-25-2 8-1 18 5 27-9 5-19 5-28-2Z" fill="#7c3aed" opacity=".65"/><text x="105" y="52" text-anchor="middle" font-size="27" font-weight="900" fill="#5b21b6">1000</text></svg>`;
+if(v===100)return `<svg width="76" height="40" viewBox="0 0 152 80" aria-label="100元"><defs><linearGradient id="g2" x1="0" x2="1"><stop stop-color="#dbeafe"/><stop offset="1" stop-color="#bfdbfe"/></linearGradient></defs><rect x="2" y="2" width="148" height="76" rx="11" fill="url(#g2)" stroke="#2563eb" stroke-width="4"/><rect x="10" y="10" width="132" height="60" rx="7" fill="none" stroke="#60a5fa" stroke-width="2"/><circle cx="34" cy="40" r="15" fill="#fff" opacity=".75"/><path d="M25 47c5-14 13-20 20-21-2 8 0 16 5 23-8 4-17 4-25-2Z" fill="#2563eb" opacity=".58"/><text x="96" y="49" text-anchor="middle" font-size="25" font-weight="900" fill="#1e40af">100</text></svg>`;
+if(v===10)return `<svg width="46" height="46" viewBox="0 0 92 92" aria-label="10元"><defs><radialGradient id="g3"><stop offset="0" stop-color="#f0fdf4"/><stop offset="1" stop-color="#bbf7d0"/></radialGradient></defs><circle cx="46" cy="46" r="42" fill="url(#g3)" stroke="#16803a" stroke-width="6"/><circle cx="46" cy="46" r="33" fill="none" stroke="#4ade80" stroke-width="2"/><circle cx="46" cy="46" r="25" fill="#fff" opacity=".55"/><text x="46" y="55" text-anchor="middle" font-size="27" font-weight="900" fill="#166534">10</text></svg>`;
+return `<svg width="40" height="40" viewBox="0 0 80 80" aria-label="1元"><defs><radialGradient id="g4"><stop offset="0" stop-color="#fff1f2"/><stop offset="1" stop-color="#fecdd3"/></radialGradient></defs><circle cx="40" cy="40" r="36" fill="url(#g4)" stroke="#d12c35" stroke-width="6"/><circle cx="40" cy="40" r="27" fill="none" stroke="#fb7185" stroke-width="2"/><text x="40" y="50" text-anchor="middle" font-size="30" font-weight="900" fill="#9f1239">1</text></svg>`}
+function init(){let d=dig(S.a);S.v={};P.forEach(p=>S.v[p.k]={o:d[p.k],b:0,a:0});S.taken=[];S.pending=[];
+S.addDone={};S.summed={};S.carryNotes={};S.subCalculated={};S.subDisplay={};S.borrowNotes={};S.placeMarks={};
+let original=dig(S.a);
+P.forEach(p=>{S.subCalculated[p.k]=false;S.subDisplay[p.k]=original[p.k];S.borrowNotes[p.k]=0;S.placeMarks[p.k]=''});
+if(S.op==='add'){let x=dig(S.b);P.forEach(p=>{S.addDone[p.k]=(dig(S.a)[p.k]===0);S.summed[p.k]=false;S.carryNotes[p.k]=0;for(let i=0;i<x[p.k];i++)S.pending.push({id:uid(),k:p.k,v:p.v})})}
+answer='';if($('ansPart')){$('ansPart').textContent='答案';$('ansPart').style.color='#94a3b8'};render()}
+function count(k){let q=S.v[k];return q.o+q.b+q.a}
+function displayAddTop(k){let q=S.v[k];return q.o+q.b}function takeOne(k){let q=S.v[k];if(q.b){q.b--;return 1}if(q.a){q.a--;return 1}if(q.o){q.o--;return 1}return 0}function addOne(k,t='b'){S.v[k][t]++}
+function money(p,cls=''){let e=document.createElement('div');e.className='money '+cls;e.innerHTML=svg(p.v);e.draggable=true;e.dataset.k=p.k;e.addEventListener('dragstart',ev=>{ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain',JSON.stringify({src:'vault',k:p.k,x:ev.clientX}))});e.addEventListener('dragend',()=>document.querySelectorAll('.drag').forEach(x=>x.classList.remove('drag')));e.addEventListener('click',ev=>{if(!clickMove)return;ev.stopPropagation();moveTake(p.k)});return e}
+function render(){ $('aPart').textContent=S.a;$('bPart').textContent=S.b;$('opPart').textContent=S.op==='sub'?'−':'＋';let target=dig(S.b),base=dig(S.a),C=$('cols');C.innerHTML='';
+P.forEach((p,i)=>{let c=document.createElement('div');c.className='col '+p.c;let takenCount=S.taken.filter(x=>x.k===p.k).length;
+c.innerHTML=`<div class="head"><div class="place">${p.n}</div><div class="have-row">${S.op==='sub'&&S.placeMarks[p.k]?`<span class="place-mark left">${S.placeMarks[p.k]}</span>`:`<span class="place-mark left"></span>`}<div class="have-num">${S.op==='sub'?S.subDisplay[p.k]:displayAddTop(p.k)}</div>${S.op==='add'&&S.placeMarks[p.k]?`<span class="place-mark right">${S.placeMarks[p.k]}</span>`:`<span class="place-mark right"></span>`}</div></div><div class="vault"></div><div class="exchange"></div><div class="take"><div class="take-num">${S.op==='sub'?target[p.k]:(S.summed[p.k]?(S.pending.filter(x=>x.k===p.k).length+S.taken.filter(x=>x.k===p.k).length):target[p.k])}</div><div class="taken"></div>${S.op==='sub'?`<div class="progress">目前已拿 ${takenCount} / ${target[p.k]}</div>${takenCount===target[p.k]&&!S.subCalculated[p.k]?`<button class="sum-btn calc-btn" data-calc="${p.k}">計算</button>`:''}`:(S.addDone[p.k]&&!S.summed[p.k]?`<button class="sum-btn" data-sum="${p.k}">加總</button>`:'')}</div>`;
+let v=c.querySelector('.vault'),q=S.v[p.k];for(let n=0;n<q.o;n++)v.appendChild(money(p));for(let n=0;n<q.b;n++)v.appendChild(money(p,'borrow'));for(let n=0;n<q.a;n++){let m=money(p);if(S.op==='add'){m.classList.add('added');m.addEventListener('dragstart',ev=>{ev.stopPropagation();ev.dataTransfer.setData('text/plain',JSON.stringify({src:'added',k:p.k}))})}v.appendChild(m)}
+let ex=c.querySelector('.exchange');if(S.op==='sub'&&i<3){let b=document.createElement('button');b.className='xbtn';b.textContent=`退位：1 個 ${p.v} → 10 個 ${P[i+1].v}`;b.onclick=()=>split(i);ex.appendChild(b)}
+else if(S.op==='add'&&i>0&&S.summed[p.k]){let total=S.pending.filter(x=>x.k===p.k).length+S.taken.filter(x=>x.k===p.k).length;if(total>=10){let b=document.createElement('button');b.className='xbtn';b.textContent=`進位：10 個 ${p.v} → 1 個 ${P[i-1].v}`;b.onclick=()=>carry(i);c.querySelector('.take').appendChild(b)}}
+let zone=c.querySelector('.taken');
+if(S.op==='add'){
+  S.pending.filter(x=>x.k===p.k).forEach(x=>{let m=money(p);m.draggable=false;m.title='加數錢幣';m.onclick=ev=>ev.stopPropagation();zone.appendChild(m)});
+}
+
+S.taken.filter(x=>x.k===p.k).forEach(x=>{let m=money(p);m.draggable=true;m.title='拖回上方可還原';m.addEventListener('dragstart',ev=>{ev.stopImmediatePropagation();ev.dataTransfer.effectAllowed='move';ev.dataTransfer.setData('text/plain',JSON.stringify({src:'taken',id:x.id,k:x.k}))});m.addEventListener('click',ev=>{if(!clickMove)return;ev.stopImmediatePropagation();restoreTaken(x.id)});zone.appendChild(m)});
+let upper=c.querySelector('.vault');
+upper.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();upper.classList.add('drag')});
+upper.addEventListener('dragleave',e=>{if(!upper.contains(e.relatedTarget))upper.classList.remove('drag')});
+upper.addEventListener('drop',e=>{
+ e.preventDefault();e.stopPropagation();upper.classList.remove('drag');
+ try{
+   let d=JSON.parse(e.dataTransfer.getData('text/plain'));
+   if(d.src==='taken'){
+     if(d.k!==p.k)return feedback('只能拖回原本相同的位值。',0);
+     restoreTaken(d.id);return;
+   }
+   if(d.src!=='vault'||d.k===p.k)return;
+   let fromIndex=P.findIndex(x=>x.k===d.k),toIndex=P.findIndex(x=>x.k===p.k);
+   if(S.op==='sub'&&toIndex===fromIndex+1){split(fromIndex);return}
+   if(S.op==='add'&&toIndex===fromIndex-1){if(!S.summed[d.k])return feedback('請先按加總。',0);carry(fromIndex);return}
+ }catch{}
+});
+let t=c.querySelector('.take');
+if(S.op==='sub' && S.subCalculated[p.k]) t.style.display='none';
+t.addEventListener('dragover',e=>{e.preventDefault();e.stopPropagation();t.classList.add('drag')});
+t.addEventListener('dragleave',e=>{if(!t.contains(e.relatedTarget))t.classList.remove('drag')});
+t.addEventListener('drop',e=>{
+ e.preventDefault();e.stopPropagation();t.classList.remove('drag');
+ try{
+   let d=JSON.parse(e.dataTransfer.getData('text/plain'));
+   if(d.src!=='vault')return;
+   if(d.k!==p.k)return feedback(`這是${P.find(x=>x.k===d.k).n}的錢，要放到相同位值。`,0);
+   moveTake(d.k);
+ }catch{}
+});
+if(S.op==='add' && S.addDone[p.k] && S.summed[p.k]){
+  upper.style.display='none';
+  ex.style.display='none';
+  c.querySelector('.head').style.display='none';
+}C.appendChild(c)});
+document.querySelectorAll('.sum-btn[data-sum]').forEach(b=>b.onclick=()=>{
+ let k=b.dataset.sum;
+ S.summed[k]=true;
+ render();
+});
+document.querySelectorAll('.calc-btn').forEach(b=>b.onclick=()=>calculateSub(b.dataset.calc));
+}
+function split(i){
+if(S.op!=='sub')return;
+let from=P[i],to=P[i+1];
+if(!takeOne(from.k))return feedback('這一位沒有錢可以退位。',0);
+for(let n=0;n<10;n++)addOne(to.k,'b');
+S.subDisplay[from.k]=Math.max(0,S.subDisplay[from.k]-1);
+S.borrowNotes[to.k]=(S.borrowNotes[to.k]||0)+10;
+S.placeMarks[to.k]='10';
+S.subCalculated[from.k]=false;S.subCalculated[to.k]=false;
+render()}
+function calculateSub(k){
+if(S.op!=='sub')return;
+let target=dig(S.b)[k],taken=S.taken.filter(x=>x.k===k).length;
+if(taken!==target)return feedback('請先拿到這一位指定的數量。',0);
+S.subDisplay[k]=count(k);
+S.subCalculated[k]=true;
+render()}
+function carry(i){
+if(S.op!=='add')return;
+let from=P[i],to=P[i-1];
+if(!S.summed[from.k])return feedback('請先按加總。',0);
+
+let pool=[
+ ...S.pending.filter(x=>x.k===from.k).map(x=>({...x,src:'pending'})),
+ ...S.taken.filter(x=>x.k===from.k).map(x=>({...x,src:'taken'}))
+];
+if(pool.length<10)return feedback(`需要 10 個 ${from.v} 才能進位。`,0);
+
+let chosen=pool.slice(0,10),
+    pids=new Set(chosen.filter(x=>x.src==='pending').map(x=>x.id)),
+    tids=new Set(chosen.filter(x=>x.src==='taken').map(x=>x.id));
+
+S.pending=S.pending.filter(x=>!pids.has(x.id));
+S.taken=S.taken.filter(x=>!tids.has(x.id));
+
+/* 進位後的 1 個高位錢幣固定出現在左邊位值的上方 */
+addOne(to.k,'a');
+S.placeMarks[to.k]='1';
+S.addDone[to.k]=false;
+S.summed[to.k]=false;
+
+render();
+}
+function moveTake(k){if(!takeOne(k))return;let p=P.find(x=>x.k===k);S.taken.push({id:uid(),k,v:p.v});if(S.op==='add'&&count(k)===0)S.addDone[k]=true;render()}
+function restoreTaken(id){let i=S.taken.findIndex(x=>x.id===id);if(i<0)return;let x=S.taken.splice(i,1)[0];addOne(x.k,'b');if(S.op==='add')S.addDone[x.k]=false;else S.subCalculated[x.k]=false;render()}
+function addPending(id){let i=S.pending.findIndex(x=>x.id===id);if(i<0)return;let x=S.pending.splice(i,1)[0];addOne(x.k,'a');render()}
+function returnAdded(k){if(!S.v[k].a)return;S.v[k].a--;let p=P.find(x=>x.k===k);S.pending.push({id:uid(),k:k,v:p.v});render()}
+function feedback(t,ok){let f=$('feedback');f.textContent=t;f.className='feedback '+(ok?'ok':'bad')}
+function placePop(pop,anchor){
+  let r=anchor.getBoundingClientRect();
+  let w=pop.offsetWidth||220,h=pop.offsetHeight||80;
+  let left=r.left+r.width/2-w/2;
+  left=Math.max(8,Math.min(window.innerWidth-w-8,left));
+  let top=r.bottom+7;
+  if(top+h>window.innerHeight-8 && r.top-h-7>=8) top=r.top-h-7;
+  pop.style.position='fixed';
+  pop.style.left=left+'px';
+  pop.style.top=top+'px';
+}
+function openNum(k,anchor){editing=k;buf=k==='ans'?answer:String(k==='a'?S.a:S.b);$('opPop').classList.remove('show');let p=$('numPop');p.classList.add('show');requestAnimationFrame(()=>placePop(p,anchor))}
+$('aPart').onclick=e=>openNum('a',e.currentTarget);$('bPart').onclick=e=>openNum('b',e.currentTarget);$('ansPart').onclick=e=>openNum('ans',e.currentTarget);$('opPart').onclick=()=>{let p=$('opPop');$('numPop').classList.remove('show');p.classList.add('op-center','show')};
+document.querySelectorAll('#numPop .key').forEach(k=>k.onclick=()=>{let a=k.dataset.a;if(a==='ok'){$('numPop').classList.remove('show');if(editing!=='ans')init();return}if(a==='del')buf=buf.slice(0,-1);else if(buf.length<4)buf=(buf==='0'?'':buf)+k.textContent;let n=buf?parseInt(buf):0;if(editing==='a'){S.a=n;$('aPart').textContent=n}else if(editing==='b'){S.b=n;$('bPart').textContent=n}else{answer=buf;$('ansPart').textContent=buf||'答案';$('ansPart').style.color=buf?'#172033':'#94a3b8'}});
+document.querySelectorAll('.opkey').forEach(b=>b.onclick=()=>{S.op=b.dataset.op;$('opPart').textContent=S.op==='sub'?'−':'＋';$('opPop').classList.remove('show','op-center');init()});
+window.addEventListener('resize',()=>{if($('numPop').classList.contains('show'))placePop($('numPop'),editing==='a'?$('aPart'):(editing==='b'?$('bPart'):$('ansPart')))});document.addEventListener('click',e=>{if(!e.target.closest('.pop')&&!e.target.closest('.part')){$('numPop').classList.remove('show');$('opPop').classList.remove('show')}});
+$('clickMode').onclick=()=>{
+ clickMove=!clickMove;
+ $('clickMode').textContent=clickMove?'☝ 點擊移動：開':'☝ 點擊移動：關';
+ $('clickMode').classList.toggle('toggle-on',clickMove);
+};
+$('reset').onclick=init;$('check').onclick=()=>{let expected=S.op==='sub'?S.a-S.b:S.a+S.b;let typed=answer===''?null:Number(answer);let opGood;
+if(S.op==='sub'){let t=dig(S.b);opGood=P.every(p=>S.taken.filter(x=>x.k===p.k).length===t[p.k] && (t[p.k]===0||S.subCalculated[p.k]))}
+else{
+  let allDown=P.every(p=>S.addDone[p.k]||count(p.k)===0);
+  let allSummed=P.every(p=>S.summed[p.k]||((S.pending.filter(x=>x.k===p.k).length+S.taken.filter(x=>x.k===p.k).length)===0));
+  let normalized=P.slice(1).every(p=>(S.pending.filter(x=>x.k===p.k).length+S.taken.filter(x=>x.k===p.k).length)<10);
+  let lowerValue=P.reduce((sum,p)=>sum+(S.pending.filter(x=>x.k===p.k).length+S.taken.filter(x=>x.k===p.k).length)*p.v,0)+P.reduce((sum,p)=>sum+count(p.k)*p.v,0);
+  opGood=allDown&&allSummed&&normalized&&lowerValue===expected;
+}
+if(opGood && typed===expected){$('answerResult').textContent='答案是 '+expected;$('success').classList.add('show');feedback('',1)}
+else if(typed!==expected)feedback('答案還不正確，再檢查看看。',0);
+else feedback(S.op==='sub'?'還有位值沒有拿到指定數量。':'還有位值尚未完成加總或進位。',0)};$('closeSuccess').onclick=()=>$('success').classList.remove('show');$('success').onclick=e=>{if(e.target===$('success'))$('success').classList.remove('show')};init()})();
+</script></body></html>
